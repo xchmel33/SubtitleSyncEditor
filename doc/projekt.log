@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.11.28)  28 NOV 2023 16:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.11.28)  28 NOV 2023 17:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -685,7 +685,8 @@ File: t1qhv.fd 2009/09/25 v1.2 font definition file for T1/qhv
 \@sirkartext=\skip85
 \@vyskaobr=\skip86
 \@sirkaobr=\skip87
-<template-fig/VUT_symbol_barevne_CMYK_CZ.pdf, id=4, 167.13641pt x 165.87971pt>
+<template-fig/VUT_symbol_barevne_CMYK_CZ.pdf, id=200, 167.13641pt x 165.87971pt
+>
 File: template-fig/VUT_symbol_barevne_CMYK_CZ.pdf Graphic file (type pdf)
 <use template-fig/VUT_symbol_barevne_CMYK_CZ.pdf>
 Package pdftex.def Info: template-fig/VUT_symbol_barevne_CMYK_CZ.pdf  used on i
@@ -724,360 +725,316 @@ LaTeX Font Info:    Font shape `T1/opensans-TLF/b/n' will be
 ukXmelo/AppData/Roaming/MiKTeX/fonts/enc/dvips/opensans/a_jg4h6q.enc} <C:/Users
 /lukXmelo/Documents/GitHub/subSyncEditor/doc/template-fig/VUT_symbol_barevne_CM
 YK_CZ.pdf>] [2{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}]
-[3] (C:\Users\lukXmelo\Documents\GitHub\subSyncEditor\doc\projekt.toc)
-\tf@toc=\write4
-\openout4 = `projekt.toc'.
+[3] (C:\Users\lukXmelo\Documents\GitHub\subSyncEditor\doc\projekt.toc<<ot1.cmap
+>><<oml.cmap>><<oms.cmap>><<omx.cmap>>
+LaTeX Font Info:    Trying to load font information for U+msa on input line 3.
 
+(C:\Program Files\MiKTeX\tex/latex/amsfonts\umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 3.
 
+(C:\Program Files\MiKTeX\tex/latex/amsfonts\umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
+l.42 ...dní principy citování}{42}{section.7.3}
+                                                  % [1
+
+
+])
+\tf@toc=\write4
+\openout4 = `projekt.toc'.
+
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
 l.226   {\hypersetup{hidelinks}\listoffigures
-                                             } [1
+                                             } [2]
+(C:\Users\lukXmelo\Documents\GitHub\subSyncEditor\doc\projekt.lof
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
+6.
 
-
-]
-(C:\Users\lukXmelo\Documents\GitHub\subSyncEditor\doc\projekt.lof)
+(C:\Program Files\MiKTeX\tex/latex/lm\t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+))
 \tf@lof=\write5
 \openout5 = `projekt.lof'.
 
 
 (C:\Users\lukXmelo\Documents\GitHub\subSyncEditor\doc\projekt-01-kapitoly-chapt
 ers.tex
-pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.9 \chapter
-            {Úvod} [2
-
-]
-Kapitola 1.
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
-6.
-(C:\Program Files\MiKTeX\tex/latex/lm\ts1lmr.fd
-File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-! You can't use `macro parameter character #' in horizontal mode.
-<argument> ...bworkshop.sourceforge.net/news.php##
-                                                  1
-l.32 ...://subworkshop.sourceforge.net/news.php#1}
-                                                  
-? 
-
 pdfTeX warning (ext4): destination with the same identifier (name{page.3}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.43     \item M
-                ultiplatform [3
-
-{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc}] [4]
-Kapitola 2.
-[5
+l.9 \chapter
+            {Úvod} [3
 
 ]
-Kapitola 3.
+Kapitola 1.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
+8.
+(C:\Program Files\MiKTeX\tex/latex/lm\ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) [4
 
-LaTeX Warning: Reference `jak' on page 6 undefined on input line 71.
-
-
-LaTeX Warning: Reference `abstrakt' on page 6 undefined on input line 75.
-
-
-LaTeX Warning: Reference `struktura' on page 6 undefined on input line 77.
-
-
-LaTeX Warning: Reference `kapitoly' on page 6 undefined on input line 79.
-
-
-LaTeX Warning: Reference `citace' on page 6 undefined on input line 81.
-
+{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc}]
+! Misplaced alignment tab character &.
+<argument> ...www.youtube.com/watch?v=4gXF6Y-v6BE&
+                                                  ab_channel=TJFREE
+l.57 ...com/watch?v=4gXF6Y-v6BE&ab_channel=TJFREE}
+                                                  
+? 
+! Missing $ inserted.
+<inserted text> 
+                $
+l.57 ...com/watch?v=4gXF6Y-v6BE&ab_channel=TJFREE}
+                                                  
+? 
+! Missing $ inserted.
+<inserted text> 
+                $
+l.57 ...com/watch?v=4gXF6Y-v6BE&ab_channel=TJFREE}
+                                                  
+? 
+[5]
+Kapitola 2.
 [6
 
-]
-
-LaTeX Warning: Reference `formality' on page 7 undefined on input line 83.
-
-
-LaTeX Warning: Reference `checklist' on page 7 undefined on input line 85.
-
-
-LaTeX Warning: Reference `odevzdani' on page 7 undefined on input line 85.
-
-
-LaTeX Warning: Reference `zaver' on page 7 undefined on input line 87.
-
-[7]
-Kapitola 4.
-
-LaTeX Warning: Citation `fitWeb' on page 8 undefined on input line 92.
-
-
-LaTeX Warning: Citation `Herout' on page 8 undefined on input line 92.
-
+] [7]
+Kapitola 3.
 [8
 
-] [9] [10] [11]
+] [9]
+Kapitola 4.
+
+LaTeX Warning: Citation `fitWeb' on page 10 undefined on input line 113.
+
+
+LaTeX Warning: Citation `Herout' on page 10 undefined on input line 113.
+
+[10
+
+] [11] [12] [13]
 Kapitola 5.
 
-LaTeX Warning: Citation `Cernocky' on page 12 undefined on input line 177.
+LaTeX Warning: Citation `Cernocky' on page 14 undefined on input line 198.
 
 
-LaTeX Warning: Citation `fitWeb' on page 12 undefined on input line 181.
-
-<<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>>
-LaTeX Font Info:    Trying to load font information for U+msa on input line 181
-.
-
-(C:\Program Files\MiKTeX\tex/latex/amsfonts\umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-)
-LaTeX Font Info:    Trying to load font information for U+msb on input line 181
-.
-
-(C:\Program Files\MiKTeX\tex/latex/amsfonts\umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-
-LaTeX Warning: Citation `Rybicka' on page 12 undefined on input line 181.
-
-[12
-
-]
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
-89.
- (C:\Program Files\MiKTeX\tex/latex/lm\t1lmtt.fd
-File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [13]
-
-LaTeX Warning: Citation `Herout' on page 14 undefined on input line 225.
-
-[14]
-
-LaTeX Warning: Citation `Herout' on page 15 undefined on input line 256.
+LaTeX Warning: Citation `fitWeb' on page 14 undefined on input line 202.
 
 
-LaTeX Warning: Citation `Lebrun2011' on page 15 undefined on input line 256.
+LaTeX Warning: Citation `Rybicka' on page 14 undefined on input line 202.
+
+[14
+
+] [15]
+
+LaTeX Warning: Citation `Herout' on page 16 undefined on input line 246.
+
+[16]
+
+LaTeX Warning: Citation `Herout' on page 17 undefined on input line 277.
 
 
-LaTeX Warning: Citation `Zemcik' on page 15 undefined on input line 256.
-
-[15]
-
-LaTeX Warning: Citation `Beran' on page 16 undefined on input line 283.
+LaTeX Warning: Citation `Lebrun2011' on page 17 undefined on input line 277.
 
 
-LaTeX Warning: Citation `Cernocky' on page 16 undefined on input line 292.
+LaTeX Warning: Citation `Zemcik' on page 17 undefined on input line 277.
+
+[17]
+
+LaTeX Warning: Citation `Beran' on page 18 undefined on input line 304.
 
 
-LaTeX Warning: Citation `Herout' on page 16 undefined on input line 305.
-
-[16] [17] [18] [19]
-
-LaTeX Warning: Citation `Beran' on page 20 undefined on input line 389.
+LaTeX Warning: Citation `Cernocky' on page 18 undefined on input line 313.
 
 
-LaTeX Warning: Citation `BeranPDF' on page 20 undefined on input line 389.
+LaTeX Warning: Citation `Herout' on page 18 undefined on input line 326.
+
+[18] [19] [20] [21]
+
+LaTeX Warning: Citation `Beran' on page 22 undefined on input line 410.
 
 
-LaTeX Warning: Citation `Cernocky' on page 20 undefined on input line 389.
+LaTeX Warning: Citation `BeranPDF' on page 22 undefined on input line 410.
 
 
-LaTeX Warning: Citation `Zemcik' on page 20 undefined on input line 389.
-
-[20]
-
-LaTeX Warning: Citation `Beran' on page 21 undefined on input line 392.
+LaTeX Warning: Citation `Cernocky' on page 22 undefined on input line 410.
 
 
-LaTeX Warning: Citation `BeranPDF' on page 21 undefined on input line 392.
+LaTeX Warning: Citation `Zemcik' on page 22 undefined on input line 410.
+
+[22]
+
+LaTeX Warning: Citation `Beran' on page 23 undefined on input line 413.
 
 
-LaTeX Warning: Citation `Cernocky' on page 21 undefined on input line 419.
-
-[21]
-
-LaTeX Warning: Reference `anglicky' on page 22 undefined on input line 426.
+LaTeX Warning: Citation `BeranPDF' on page 23 undefined on input line 413.
 
 
-LaTeX Warning: Citation `Zemcik' on page 22 undefined on input line 436.
+LaTeX Warning: Citation `Cernocky' on page 23 undefined on input line 440.
 
-[22] [23] [24]
+[23]
+
+LaTeX Warning: Citation `Zemcik' on page 24 undefined on input line 457.
+
+[24] [25] [26]
 Kapitola 6.
 
-LaTeX Warning: Citation `Zemcik' on page 25 undefined on input line 476.
+LaTeX Warning: Citation `Zemcik' on page 27 undefined on input line 497.
 
 
-LaTeX Warning: Citation `Herout' on page 25 undefined on input line 476.
+LaTeX Warning: Citation `Herout' on page 27 undefined on input line 497.
 
 
-LaTeX Warning: Citation `rady' on page 25 undefined on input line 476.
+LaTeX Warning: Citation `rady' on page 27 undefined on input line 497.
 
 
-LaTeX Warning: Citation `Cernocky' on page 25 undefined on input line 476.
+LaTeX Warning: Citation `Cernocky' on page 27 undefined on input line 497.
 
 
-LaTeX Warning: Citation `Beran' on page 25 undefined on input line 476.
+LaTeX Warning: Citation `Beran' on page 27 undefined on input line 497.
 
 
-LaTeX Warning: Citation `fitWeb' on page 25 undefined on input line 494.
+LaTeX Warning: Citation `fitWeb' on page 27 undefined on input line 515.
 
-[25
+[27
 
-] [26] [27] [28] [29] [30]
+] [28] [29] [30] [31] [32]
 
-LaTeX Warning: Citation `Cernocky' on page 31 undefined on input line 664.
+LaTeX Warning: Citation `Cernocky' on page 33 undefined on input line 685.
 
-[31] [32]
+[33] [34]
 
-LaTeX Warning: Citation `Zemcik' on page 33 undefined on input line 721.
+LaTeX Warning: Citation `Zemcik' on page 35 undefined on input line 742.
 
-[33] [34] [35]
+[35] [36] [37]
 
-LaTeX Warning: Citation `fitWeb' on page 36 undefined on input line 829.
+LaTeX Warning: Citation `fitWeb' on page 38 undefined on input line 850.
 
 
-LaTeX Warning: Citation `fitWeb' on page 36 undefined on input line 831.
+LaTeX Warning: Citation `fitWeb' on page 38 undefined on input line 852.
 
-[36] [37] [38]
+[38] [39] [40]
 Kapitola 7.
 
-LaTeX Warning: Citation `citace' on page 39 undefined on input line 890.
+LaTeX Warning: Citation `citace' on page 41 undefined on input line 911.
 
-[39
+[41
 
 ]
 
-LaTeX Warning: Citation `biblio' on page 40 undefined on input line 931.
+LaTeX Warning: Citation `biblio' on page 42 undefined on input line 952.
 
-[40]
+[42]
 
-LaTeX Warning: Reference `priloha-priklady-citaci' on page 41 undefined on inpu
-t line 952.
+LaTeX Warning: Citation `Herout' on page 43 undefined on input line 983.
 
-
-LaTeX Warning: Citation `Herout' on page 41 undefined on input line 962.
-
-[41] [42] [43]
+[43] [44] [45]
 Kapitola 8.
 
-LaTeX Warning: Citation `smernice' on page 44 undefined on input line 1036.
+LaTeX Warning: Citation `smernice' on page 46 undefined on input line 1057.
 
 
-LaTeX Warning: Citation `smerniceFIT' on page 44 undefined on input line 1036.
+LaTeX Warning: Citation `smerniceFIT' on page 46 undefined on input line 1057.
 
 
-LaTeX Warning: Citation `formalniBP' on page 44 undefined on input line 1036.
+LaTeX Warning: Citation `formalniBP' on page 46 undefined on input line 1057.
 
 
-LaTeX Warning: Citation `formalniDP' on page 44 undefined on input line 1036.
+LaTeX Warning: Citation `formalniDP' on page 46 undefined on input line 1057.
 
 
-LaTeX Warning: Citation `smerniceFIT' on page 44 undefined on input line 1038.
-
-
-LaTeX Warning: Reference `rozsah' on page 44 undefined on input line 1038.
+LaTeX Warning: Citation `smerniceFIT' on page 46 undefined on input line 1059.
 
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 1056.
-[44
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 1077.
+[46
 
-] [45]
+] [47]
 
-LaTeX Warning: Citation `Pravidla' on page 46 undefined on input line 1084.
-
-
-LaTeX Warning: Citation `Herout' on page 46 undefined on input line 1090.
+LaTeX Warning: Citation `Pravidla' on page 48 undefined on input line 1105.
 
 
-LaTeX Warning: Citation `chyby' on page 46 undefined on input line 1090.
+LaTeX Warning: Citation `Herout' on page 48 undefined on input line 1111.
 
 
-LaTeX Warning: Citation `prirucka' on page 46 undefined on input line 1098.
+LaTeX Warning: Citation `chyby' on page 48 undefined on input line 1111.
 
-[46] [47] [48] [49]
 
-LaTeX Warning: Citation `Rybicka' on page 50 undefined on input line 1234.
+LaTeX Warning: Citation `prirucka' on page 48 undefined on input line 1119.
 
-[50]
+[48] [49] [50] [51]
+
+LaTeX Warning: Citation `Rybicka' on page 52 undefined on input line 1255.
+
+[52]
 Kapitola 9.
 
-LaTeX Warning: Citation `formalniBP' on page 51 undefined on input line 1239.
+LaTeX Warning: Citation `formalniBP' on page 53 undefined on input line 1260.
 
 
-LaTeX Warning: Citation `formalniDP' on page 51 undefined on input line 1239.
+LaTeX Warning: Citation `formalniDP' on page 53 undefined on input line 1260.
 
 
-LaTeX Warning: Reference `checklist' on page 51 undefined on input line 1243.
+LaTeX Warning: Citation `smernice' on page 53 undefined on input line 1264.
 
 
-LaTeX Warning: Citation `smernice' on page 51 undefined on input line 1243.
+LaTeX Warning: Citation `smerniceFIT' on page 53 undefined on input line 1264.
 
 
-LaTeX Warning: Citation `smerniceFIT' on page 51 undefined on input line 1243.
+LaTeX Warning: Citation `rady' on page 53 undefined on input line 1272.
 
+[53
 
-LaTeX Warning: Citation `rady' on page 51 undefined on input line 1251.
-
-[51
-
-] [52]
+] [54]
 Kapitola 10.
 )
 No file projekt.bbl.
 \c@ttl@toc@chapters=\count348
 
 (C:\Users\lukXmelo\Documents\GitHub\subSyncEditor\doc\projekt-30-prilohy-append
-ices.tex [53
+ices.tex [55
 
 ]
 Příloha A.
 
-LaTeX Warning: Citation `Pysny' on page 54 undefined on input line 38.
+LaTeX Warning: Citation `Pysny' on page 56 undefined on input line 38.
 
+[56
 
-LaTeX Warning: Reference `priloha-priklady-citaci' on page 54 undefined on inpu
-t line 38.
+] [57]
 
-[54
+LaTeX Warning: Citation `fitWeb' on page 58 undefined on input line 88.
 
-] [55]
-
-LaTeX Warning: Citation `fitWeb' on page 56 undefined on input line 88.
-
-[56] [57] [58]
+[58] [59] [60]
 Příloha B.
 
-LaTeX Warning: Citation `CernockyEnglish' on page 59 undefined on input line 11
+LaTeX Warning: Citation `CernockyEnglish' on page 61 undefined on input line 11
 4.
 
-[59
+[61
 
-] [60] [61] [62]
+] [62] [63] [64]
 Příloha C.
 
-LaTeX Warning: Citation `Herout' on page 63 undefined on input line 246.
+LaTeX Warning: Citation `Herout' on page 65 undefined on input line 246.
 
-[63
+[65
 
-] [64] [65] [66]
+] [66] [67] [68]
 Příloha D.
-[67
+[69
 
 ]
-
-LaTeX Warning: Reference `eq:rovnice2' on page 68 undefined on input line 422.
-
-
-LaTeX Warning: Reference `sirokyObrazek' on page 68 undefined on input line 433
-.
-
-
-LaTeX Warning: Reference `keepCalm' on page 68 undefined on input line 433.
-
-<obrazky-figures/placeholder.pdf, id=601, 151.87993pt x 85.31876pt>
+<obrazky-figures/placeholder.pdf, id=831, 151.87993pt x 85.31876pt>
 File: obrazky-figures/placeholder.pdf Graphic file (type pdf)
 <use obrazky-figures/placeholder.pdf>
 Package pdftex.def Info: obrazky-figures/placeholder.pdf  used on input line 43
@@ -1103,52 +1060,26 @@ File: obrazky-figures/placeholder.pdf Graphic file (type pdf)
 Package pdftex.def Info: obrazky-figures/placeholder.pdf  used on input line 44
 2.
 (pdftex.def)             Requested size: 103.798pt x 58.31018pt.
-<obrazky-figures/keep-calm.png, id=602, 602.25pt x 702.625pt>
+<obrazky-figures/keep-calm.png, id=832, 602.25pt x 702.625pt>
 File: obrazky-figures/keep-calm.png Graphic file (type png)
 <use obrazky-figures/keep-calm.png>
 Package pdftex.def Info: obrazky-figures/keep-calm.png  used on input line 452.
 
 (pdftex.def)             Requested size: 129.74585pt x 151.37234pt.
-[68 <C:/Users/lukXmelo/Documents/GitHub/subSyncEditor/doc/obrazky-figures/place
-holder.pdf>] [69 <C:/Users/lukXmelo/Documents/GitHub/subSyncEditor/doc/obrazky-
-figures/keep-calm.png>]
+ [70 <C:/Users/lukXmelo/Documents/GitHub/subSyncEditor/doc/obrazky-figures/plac
+eholder.pdf>] [71 <C:/Users/lukXmelo/Documents/GitHub/subSyncEditor/doc/obrazky
+-figures/keep-calm.png>]
 Příloha E.
 
-LaTeX Warning: Citation `Pysny' on page 70 undefined on input line 469.
+LaTeX Warning: Citation `Pysny' on page 72 undefined on input line 469.
 
+[72
 
-LaTeX Warning: Reference `pr-casopis-clanek' on page 70 undefined on input line
- 473.
-
-
-LaTeX Warning: Reference `pr-monografie' on page 70 undefined on input line 474
-.
-
-
-LaTeX Warning: Reference `pr-sbornik' on page 70 undefined on input line 475.
-
-
-LaTeX Warning: Reference `pr-kapitola' on page 70 undefined on input line 476.
-
-
-LaTeX Warning: Reference `pr-manual' on page 70 undefined on input line 477.
-
-
-LaTeX Warning: Reference `pr-thesis' on page 70 undefined on input line 478.
-
-
-LaTeX Warning: Reference `pr-webpage' on page 70 undefined on input line 479.
-
-
-LaTeX Warning: Reference `pr-website' on page 70 undefined on input line 480.
-
-[70
-
-] [71] [72] [73] [74] [75] [76] [77] [78])
+] [73] [74] [75] [76] [77] [78] [79] [80])
 \tf@ptc=\write6
 \openout6 = `projekt.ptc'.
 
- [79]
+ [81]
 (C:\Users\lukXmelo\Documents\GitHub\subSyncEditor\doc\projekt.aux)
  ***********
 LaTeX2e <2023-11-01>
@@ -1158,49 +1089,41 @@ L3 programming layer <2021/03/21>
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `projekt.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `projekt.out':
-(rerunfilecheck)             Before: D41D8CD98F00B204E9800998ECF8427E;0
-(rerunfilecheck)             After:  F34858780E0953496F1A63779F5EB39E;7895.
+Package rerunfilecheck Info: File `projekt.out' has not changed.
+(rerunfilecheck)             Checksum: F34858780E0953496F1A63779F5EB39E;7895.
  ) 
 Here is how much of TeX's memory you used:
- 16506 strings out of 474587
- 260178 string characters out of 5755507
- 1945558 words of memory out of 5000000
- 37955 multiletter control sequences out of 15000+600000
+ 16558 strings out of 474587
+ 260838 string characters out of 5755507
+ 1946558 words of memory out of 5000000
+ 38005 multiletter control sequences out of 15000+600000
  662085 words of font info for 142 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  80i,15n,93p,1814b,714s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/lukXmelo/AppData/Roaming/MiKTeX/fonts/type1/ascender/opensans/OpenS
 ans-Bold.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program
- Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Program Files/MiKTeX
-/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/
-public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfont
-s/cm/cmr9.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pf
-b><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Program
- Files/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Program Files/MiKTeX/fonts/t
-ype1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx8.
-pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmcsc10.pfb><C:/Program File
-s/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/p
-ublic/lm/lmr6.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/P
-rogram Files/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Program Files/MiKTeX/fon
-ts/type1/public/lm/lmri10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lm
-ri8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Program F
-iles/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><C:/Program Files/MiKTeX/fonts/typ
-e1/public/lm/lmtt9.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtti10.p
-fb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb>
+ Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX
+/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Program Files/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfon
+ts/cm/cmr8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb
+><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program
+ Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Program Files/MiKTeX
+/fonts/type1/public/lm/lmbx10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/l
+m/lmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx8.pfb><C:/Progr
+am Files/MiKTeX/fonts/type1/public/lm/lmcsc10.pfb><C:/Program Files/MiKTeX/font
+s/type1/public/lm/lmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr6
+.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Program Files/
+MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Program Files/MiKTeX/fonts/type1/publ
+ic/lm/lmri10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmri8.pfb><C:/P
+rogram Files/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Program Files/MiKTeX/f
+onts/type1/public/lm/lmtt10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/
+lmtt9.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtti10.pfb><C:/Progra
+m Files/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb>
 Output written on C:\Users\lukXmelo\Documents\GitHub\subSyncEditor\doc\projekt.
-pdf (82 pages, 1016503 bytes).
+pdf (84 pages, 1063952 bytes).
 PDF statistics:
- 832 PDF objects out of 1000 (max. 8388607)
- 304 named destinations out of 1000 (max. 500000)
- 42 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1071 PDF objects out of 1200 (max. 8388607)
+ 306 named destinations out of 1000 (max. 500000)
+ 434 words of extra memory for PDF output out of 10000 (max. 10000000)
 

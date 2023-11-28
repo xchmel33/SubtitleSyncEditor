@@ -1,7 +1,13 @@
 # Subtitle Sync Editor
 
 **Author:** Lukas Chmelo  
-**VUT Login:** xchmel33
+**VUT Login:** xchmel33  
+
+**Supervisor:**  Ing. Tomáš Milet, Ph.D.  
+ 
+## Version control
+
+https://github.com/xchmel33/SubtitleSyncEditor
 
 ## Description
 

@@ -11,7 +11,9 @@
 \section{Stav súčasných riešení}
 
 \subsection{Subtitle Editor}
+
 \href{https://github.com/kitone/subtitleeditor}{https://github.com/kitone/subtitleeditor}
+
 \begin{itemize}
     \item Only for Linux
     \item Difficult to install
@@ -20,25 +22,31 @@
 \end{itemize}
 
 \subsection{Kapwing}
+
 \href{https://www.kapwing.com/studio/editor}{https://www.kapwing.com/studio/editor}
+
 \begin{itemize}
     \item Web tool
     \item Customization of font, style, and position of subtitles; collaboration workspace, video-editing tools.
     \item Only supports the SRT format, free version has limitations, reported issues with video processing and glitches, low video quality in free version.
-    \item Focus on simultaneous editing of multiple files distinguishes it.
+    \item User friendly, but does not support multiple subtitle files in the same project.
 \end{itemize}
 
 \subsection{Subtitle Workshop}
-\href{https://subworkshop.sourceforge.net/news.php#1}{https://subworkshop.sourceforge.net/news.php#1}
+
+\href{https://subworkshop.sourceforge.net/news.php}{https://subworkshop.sourceforge.net/news.php}
+
 \begin{itemize}
-    \item Simple to install on Windows, Linux and Os X
+    \item Simple to install on Windows and Linux
     \item Quick setting of durations, line adjustments, spelling checks.
     \item Some users reported that 64-bit versions crash frequently, and the software is sometimes considered slow and buggy. It also doesn't recognize MKV files.
     \item Editing features are similar with other tools, but it cannot edit multiple files simultaneously.
 \end{itemize}
 
 \subsection{Aegisub}
+
 \href{https://github.com/Aegisub/Aegisub}{https://github.com/Aegisub/Aegisub}
+
 \begin{itemize}
     \item Multiplatform
     \item Synchronizes subtitles with audio, real-time preview, styling tools, translation assistant, shows audio waveform.
@@ -46,17 +54,30 @@
     \item Does not natively support handling multiple video files or subtitle files simultaneously in the same project.
 \end{itemize}
 
+\noindent\href{https://www.youtube.com/watch?v=4gXF6Y-v6BE&ab_channel=TJFREE}{https://www.youtube.com/watch?v=4gXF6Y-v6BE&ab_channel=TJFREE}
+
 \chapter{Implementácia}
 
 \section{Prieskum implementačných technológií a nástrojov}
 
 \subsection{GUI}
 \begin{itemize}
-  \item PyQt - requires a commercial license for commercial applications
-  \item PySide6 - Qt for Python (Qt 6), commercial license
-  \item Tkinter - Python's de-facto standard GUI (comes with Python), open source
-  \item Kivy - open source, cross-platform GUI, mobile support
+  \item PySide6 (TOP) - Qt for Python (Qt 6), commercial license (or LGPL for open source)
+  \item PyQt6 (2nd BEST) - requires a commercial license for commercial applications (or GPL for open source)
+  \item Tkinter (not good) - code-centric, Python's de-facto standard GUI (comes with Python), open source (MIT license)
+  \item Kivy (too complex) -  KV language, open source, cross-platform GUI, mobile support (MIT license)
 \end{itemize}
+
+PySide6 vs PyQt6:
+\begin{itemize}
+  \item 1:0 - PySide6 has shorter or more familiar naming conventions.
+  \item 1:1 - PyQt6 offers a more straightforward approach for working with .ui files exported from Qt Creator/Designer.
+  \item 2:2 - Both provide similar functionality, but the syntax difference is something to consider based on your coding preference.
+  \item 3:2 - PySide6 might be more convenient if you frequently work with mouse events and prefer shorthand methods.
+  \item 4:2 - PySide6 could offer a more Pythonic and readable coding style, but it may complicate writing code that is portable between PyQt6 and PySide6.
+\end{itemize}
+
+PySide6 wins!
 
 \subsection{Backend}
 \begin{itemize}

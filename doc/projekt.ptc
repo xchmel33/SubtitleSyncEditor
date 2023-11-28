@@ -1,61 +1,61 @@
 \babel@toc {czech}{}\relax 
-\contentsline {chapter}{\numberline {1}Úvod}{3}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Stav súčasných riešení}{3}{section.1.1}%
-\contentsline {subsection}{\numberline {1.1.1}Subtitle Editor}{3}{subsection.1.1.1}%
-\contentsline {subsection}{\numberline {1.1.2}Kapwing}{3}{subsection.1.1.2}%
-\contentsline {subsection}{\numberline {1.1.3}Subtitle Workshop}{3}{subsection.1.1.3}%
-\contentsline {subsection}{\numberline {1.1.4}Aegisub}{4}{subsection.1.1.4}%
-\contentsline {chapter}{\numberline {2}Implementácia}{5}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Prieskum implementačných technológií a nástrojov}{5}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}GUI}{5}{subsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.1.2}Backend}{5}{subsection.2.1.2}%
-\contentsline {chapter}{\numberline {3}Úvod (zo sablony)}{6}{chapter.3}%
-\contentsline {chapter}{\numberline {4}Abstrakt}{8}{chapter.4}%
-\contentsline {paragraph}{První část -- Jaký se řeší problém? Jaké je téma? Jaký je cíl textu?}{9}{section*.6}%
-\contentsline {paragraph}{Druhá část -- Jak je problém vyřešen? Cíl naplněn?}{9}{section*.7}%
-\contentsline {paragraph}{Třetí část -- Jaké jsou konkrétní výsledky? Jak dobře je problém vyřešen?}{10}{section*.8}%
-\contentsline {paragraph}{Čtvrtá část -- Takže co? Čím je to užitečné vědě a čtenáři?}{10}{section*.9}%
-\contentsline {paragraph}{Nultá část -- O co jde? Kde jsme?}{10}{section*.10}%
-\contentsline {chapter}{\numberline {5}Příprava základní struktury práce}{12}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Užitečné rady pro psaní odborného textu}{12}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Komu se píše diplomka}{14}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Struktura diplomové práce -- Pět kapitol}{15}{section.5.3}%
-\contentsline {section}{\numberline {5.4}Diplomka -- komiksová edice}{17}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Jak pojmenovat kapitoly}{19}{section.5.5}%
-\contentsline {section}{\numberline {5.6}Obecné rady zkušených vedoucích}{21}{section.5.6}%
-\contentsline {chapter}{\numberline {6}Jednotlivé kapitoly práce}{25}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Obsah}{25}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Úvod}{26}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Shrnutí dosavadního stavu}{27}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Data}{29}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Zhodnocení současného stavu a~plán práce (návrh)}{29}{section.6.5}%
-\contentsline {section}{\numberline {6.6}Uživatelské rozhraní}{31}{section.6.6}%
-\contentsline {section}{\numberline {6.7}Implementace}{31}{section.6.7}%
-\contentsline {section}{\numberline {6.8}Testování}{33}{section.6.8}%
-\contentsline {section}{\numberline {6.9}Závěr}{34}{section.6.9}%
-\contentsline {section}{\numberline {6.10}Přílohy}{36}{section.6.10}%
-\contentsline {paragraph}{Příloha 1 -- Kuchařka}{37}{section*.55}%
-\contentsline {paragraph}{Další přílohy}{37}{section*.56}%
-\contentsline {chapter}{\numberline {7}Pravidla pro bibliografické citace}{39}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Definice pojmů}{39}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Přebírání cizích textů}{39}{section.7.2}%
-\contentsline {section}{\numberline {7.3}Základní principy citování}{40}{section.7.3}%
-\contentsline {section}{\numberline {7.4}Citační normy}{40}{section.7.4}%
-\contentsline {section}{\numberline {7.5}Využití elektronických zdrojů}{41}{section.7.5}%
-\contentsline {section}{\numberline {7.6}Evergreen: citování webu vs. papíru}{41}{section.7.6}%
-\contentsline {section}{\numberline {7.7}Sazba citací}{42}{section.7.7}%
-\contentsline {chapter}{\numberline {8}Formální stránka práce}{44}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Časté chyby}{46}{section.8.1}%
-\contentsline {chapter}{\numberline {9}Odevzdání práce}{51}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Odevzdání listinné formy práce}{51}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Jak odevzdat práci v IS VUT}{52}{section.9.2}%
-\contentsline {chapter}{\numberline {10}Závěr}{53}{chapter.10}%
+\contentsline {chapter}{\numberline {1}Úvod}{4}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Stav súčasných riešení}{4}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Subtitle Editor}{4}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Kapwing}{4}{subsection.1.1.2}%
+\contentsline {subsection}{\numberline {1.1.3}Subtitle Workshop}{4}{subsection.1.1.3}%
+\contentsline {subsection}{\numberline {1.1.4}Aegisub}{5}{subsection.1.1.4}%
+\contentsline {chapter}{\numberline {2}Implementácia}{6}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Prieskum implementačných technológií a nástrojov}{6}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}GUI}{6}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Backend}{6}{subsection.2.1.2}%
+\contentsline {chapter}{\numberline {3}Úvod (zo sablony)}{8}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Abstrakt}{10}{chapter.4}%
+\contentsline {paragraph}{První část -- Jaký se řeší problém? Jaké je téma? Jaký je cíl textu?}{11}{section*.6}%
+\contentsline {paragraph}{Druhá část -- Jak je problém vyřešen? Cíl naplněn?}{11}{section*.7}%
+\contentsline {paragraph}{Třetí část -- Jaké jsou konkrétní výsledky? Jak dobře je problém vyřešen?}{12}{section*.8}%
+\contentsline {paragraph}{Čtvrtá část -- Takže co? Čím je to užitečné vědě a čtenáři?}{12}{section*.9}%
+\contentsline {paragraph}{Nultá část -- O co jde? Kde jsme?}{12}{section*.10}%
+\contentsline {chapter}{\numberline {5}Příprava základní struktury práce}{14}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Užitečné rady pro psaní odborného textu}{14}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Komu se píše diplomka}{16}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Struktura diplomové práce -- Pět kapitol}{17}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Diplomka -- komiksová edice}{19}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Jak pojmenovat kapitoly}{21}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Obecné rady zkušených vedoucích}{23}{section.5.6}%
+\contentsline {chapter}{\numberline {6}Jednotlivé kapitoly práce}{27}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Obsah}{27}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Úvod}{28}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Shrnutí dosavadního stavu}{29}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Data}{31}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Zhodnocení současného stavu a~plán práce (návrh)}{31}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Uživatelské rozhraní}{33}{section.6.6}%
+\contentsline {section}{\numberline {6.7}Implementace}{33}{section.6.7}%
+\contentsline {section}{\numberline {6.8}Testování}{35}{section.6.8}%
+\contentsline {section}{\numberline {6.9}Závěr}{36}{section.6.9}%
+\contentsline {section}{\numberline {6.10}Přílohy}{38}{section.6.10}%
+\contentsline {paragraph}{Příloha 1 -- Kuchařka}{39}{section*.55}%
+\contentsline {paragraph}{Další přílohy}{39}{section*.56}%
+\contentsline {chapter}{\numberline {7}Pravidla pro bibliografické citace}{41}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Definice pojmů}{41}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Přebírání cizích textů}{41}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Základní principy citování}{42}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Citační normy}{42}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Využití elektronických zdrojů}{43}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Evergreen: citování webu vs. papíru}{43}{section.7.6}%
+\contentsline {section}{\numberline {7.7}Sazba citací}{44}{section.7.7}%
+\contentsline {chapter}{\numberline {8}Formální stránka práce}{46}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Časté chyby}{48}{section.8.1}%
+\contentsline {chapter}{\numberline {9}Odevzdání práce}{53}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Odevzdání listinné formy práce}{53}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Jak odevzdat práci v IS VUT}{54}{section.9.2}%
+\contentsline {chapter}{\numberline {10}Závěr}{55}{chapter.10}%
 \ttl@starttoc {chapters@1}
-\contentsline {chapter}{\numberline {A}Jak pracovat s touto šablonou}{54}{appendix.A}%
-\contentsline {paragraph}{Pozor na číslování stránek!}{55}{section*.64}%
-\contentsline {chapter}{\numberline {B}Psaní anglického textu}{59}{appendix.B}%
-\contentsline {paragraph}{Časté chyby ve slovech}{62}{section*.75}%
-\contentsline {chapter}{\numberline {C}Checklist}{63}{appendix.C}%
-\contentsline {chapter}{\numberline {D}\LaTeX pro začátečníky}{67}{appendix.D}%
-\contentsline {chapter}{\numberline {E}Příklady bibliografických citací}{70}{appendix.E}%
+\contentsline {chapter}{\numberline {A}Jak pracovat s touto šablonou}{56}{appendix.A}%
+\contentsline {paragraph}{Pozor na číslování stránek!}{57}{section*.64}%
+\contentsline {chapter}{\numberline {B}Psaní anglického textu}{61}{appendix.B}%
+\contentsline {paragraph}{Časté chyby ve slovech}{64}{section*.75}%
+\contentsline {chapter}{\numberline {C}Checklist}{65}{appendix.C}%
+\contentsline {chapter}{\numberline {D}\LaTeX pro začátečníky}{69}{appendix.D}%
+\contentsline {chapter}{\numberline {E}Příklady bibliografických citací}{72}{appendix.E}%
 \contentsfinish 
