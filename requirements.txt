@@ -3,3 +3,6 @@ numpy
 matplotlib
 scipy
 ffmpeg-python
+PySide6
+pyinstaller
+moviepy

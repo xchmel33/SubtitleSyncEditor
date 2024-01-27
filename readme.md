@@ -25,6 +25,10 @@ Key features of the application include:
 Additionally, the focus on user-friendliness and cross-platform compatibility ensures ease of use across common 
 operating systems.
 
+## 📦 Installation
+
+todo!
+
 ## 👾 Commands
 
 Run example project **Subtitle Editor** in Docker:
