@@ -25,24 +25,68 @@ Key features of the application include:
 Additionally, the focus on user-friendliness and cross-platform compatibility ensures ease of use across common 
 operating systems.
 
-## 📦 Installation
+## Requirements
 
-todo!
+- Python 3.10 or higher
+- Linux - Ubuntu 22.04 or higher (other distributions untested) || Windows 10 or higher
+- TODO: How to install Python 3.10 on Ubuntu 20.04: https://zomro.com/blog/faq/299-kak-ustanovit-python-310-na-ubuntu-2004
 
-## 👾 Commands
+## 📦 Installation [development]
 
-Run example project **Subtitle Editor** in Docker:
+### Python 3.10 & pip3
 ```bash
-docker-compose -f subtitleeditor/docker-compose.yaml run --rm subtitleeditor
+sudo apt-get update
+sudo apt-get install python3.10 pip3
 ```
-Build the project documentation:
+
+## Dependencies
 ```bash
-pdflatex -output-directory=doc doc/projekt.tex
+pip3 install -r requirements.txt
 ```
-Run 1st task calculating the overall energy of a signal:
-```bash 
-python src/energy.py speech_examples/1-4.mp3
-python src/energy.py speech_examples/access-granted.mp3
-python src/energy.py speech_examples/countdown-to-fight.mp3
-python src/energy.py speech_examples/hey_give_it_back.mp3
+
+
+## Installer [production]
+
+### For Linux on Windows host
+```ps1
+./intstall/win-installer.ps1 linux build
 ```
+
+
+### Windows
+```ps1
+./intstall/win-installer.ps1 windows build
+```
+
+## 👾 Usage [development]
+
+### Run
+```bash
+python3 src/app.py
+```
+
+## 👾 Usage [build]
+
+### Run [Linux, unstable]
+```bash
+```bash
+./dist/app
+```
+
+### Run [Windows, stable]
+```ps1
+# 1st option
+.\dist\app.exe
+
+# 2nd option
+./intstall/win-installer.ps1 windows run
+```
+
+### TODO
+- Better display of audio signal with controls of the timeline
+- Video player
+- Multiple videos support
+- Upload/parse subtitles from video
+- Merging subtitles
+- Installer
+  - this should be done in the end, when the app is stable, when all dependencies are known and resolved
