@@ -35,7 +35,7 @@
         "
       >
         <div>
-          <span>{{ filename || file }}</span>
+          <span style="color: white">{{ filename || file }}</span>
         </div>
         <div class="ml-auto">
           <v-btn

@@ -69,7 +69,3 @@ npm run dev
 npm run devapp
 ```
 now go to localhost:8080 in web browser and you can use the app
-
-
-## Videos directory
-https://mab.to/t/k4E5tT7eeTJ/eu1
