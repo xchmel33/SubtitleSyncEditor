@@ -9,7 +9,6 @@ lerna-debug.log*
 
 my-electron-app/node_modules
 my-electron-app/dist
-my-electron-app/videos
 
 # Editor directories and files
 .vscode/*
