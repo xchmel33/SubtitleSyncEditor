@@ -84,6 +84,9 @@ python3 src/app.py
 
 ### TODO
 - Better display of audio signal with controls of the timeline
+  - replace matplotlib with custom component
+  - add zoom
+  - add highlights of recognized words 
 - Video player
 - Multiple videos support
 - Upload/parse subtitles from video
