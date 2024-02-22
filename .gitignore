@@ -9,7 +9,7 @@ lerna-debug.log*
 
 my-electron-app/node_modules
 my-electron-app/dist
-my-electron-app/videos/*
+my-electron-app/videos
 
 # Editor directories and files
 .vscode/*
@@ -21,4 +21,3 @@ my-electron-app/videos/*
 *.njsproj
 *.sln
 *.sw?
-my-electron-app/videos/ai_story_long_effects.mp4
