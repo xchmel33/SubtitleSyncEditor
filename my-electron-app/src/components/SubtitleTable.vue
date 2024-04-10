@@ -1,3 +1,94 @@
+<script setup lang="js">
+import ActionMenu from '@/components/lib/ActionMenu.vue'
+import FileManager from '@/components/FileManager.vue'
+import { parseSubtitles } from '@/helpers'
+import { ref, reactive, computed, watch, getCurrentInstance, onMounted } from 'vue'
+import FileVariantManager from '@/components/FileVariantManager.vue'
+
+const { $apiService, $error } = getCurrentInstance().appContext.config.globalProperties
+
+const props = defineProps({
+  subtitles: {
+    type: Array,
+    default: () => [],
+  },
+  hasVideo: {
+    type: Boolean,
+    default: false,
+  },
+  file: { String, default: '' },
+  rows: { Number, default: 0 },
+})
+
+const hovered = ref(false)
+const menuOpen = ref(false)
+const extracting = ref(false)
+
+const emit = defineEmits(['update-subtitle', 'update-file', 'extract-subtitles', 'hover-subtitle'])
+
+const loadSubtitles = async filename => {
+  try {
+    const { data } = await $apiService.sendMessage('load-subtitles', {
+      filename,
+      isPath: true,
+    })
+    emit('update-file', filename)
+    emit('update-subtitle', parseSubtitles(data))
+  } catch (error) {
+    $error.message = error?.response?.data?.error || ''
+  }
+}
+
+function extractSubtitles() {
+  extracting.value = true
+  emit('extract-subtitles')
+}
+
+function updateSubtitle(subtitle) {
+  emit('update-subtitle', subtitle)
+}
+
+const subtitleRows = computed(() => {
+  if (props.subtitles.length < props.rows) {
+    return [
+      ...props.subtitles,
+      ...Array(props.rows - props.subtitles.length).fill({
+        start: '',
+        end: '',
+        text: '',
+      }),
+    ]
+  }
+  return props.subtitles
+})
+
+const headers = reactive([
+  { title: 'Start', value: 'start', align: 'center' },
+  { title: 'End', value: 'end', align: 'center' },
+  { title: 'Subtitle text', value: 'text', align: 'center' },
+])
+const actions = reactive([
+  { name: 'save', icon: 'mdi-content-save', method: () => {}, hasPopup: false },
+  { name: 'edit', icon: 'mdi-pencil', method: () => {}, hasPopup: true },
+  { name: 'close', icon: 'mdi-close', method: () => {}, hasPopup: false },
+])
+
+onMounted(() => {
+  if (props.file && !props.subtitles.length) {
+    loadSubtitles(props.file)
+  }
+})
+watch(
+  () => props.subtitles,
+  newSubtitles => {
+    if (extracting.value && newSubtitles.length > 0) {
+      emit('update-file', 'Extracted subtitles')
+      extracting.value = false
+    }
+  },
+  { deep: true },
+)
+</script>
 <template>
   <div
     v-if="!file"
@@ -11,14 +102,7 @@
       @click="$refs.fileInput.click()"
     >
       <v-icon style="font-size: 78px">mdi-upload</v-icon>
-      <span style="font-size: 24px">Upload Subtitles</span>
-      <input
-        type="file"
-        ref="fileInput"
-        @change="handleSubtitleUpload"
-        accept=".srt, .vtt, text/vtt, application/x-subrip"
-        style="display: none"
-      />
+      <span style="font-size: 24px">Open Subtitles</span>
     </div>
     <div
       class="d-flex align-center flex-column ma-auto container_button w-100 h-100 justify-center"
@@ -36,26 +120,37 @@
     @mouseover="hovered = true"
     @mouseleave="hovered = false"
   >
-    <div
-      v-if="hovered"
-      class="d-flex align-center justify-space-between"
-      style="position: absolute; top: 0; right: 0.5rem; color: black; width: calc(100% - 1rem)"
+    <ActionMenu
+      style="padding: 0.5rem 0.25rem"
+      :options="actions"
+      :active="hovered || menuOpen"
+      @open="
+        data => {
+          if (data === undefined) return
+          menuOpen = data
+        }
+      "
     >
-      <div>
-        <span>{{ file }}</span>
-      </div>
-      <div class="ml-auto">
-        <v-btn
-          v-for="action in actions"
-          :key="action.icon"
-          class="icon_button"
-          @click="action.method"
-        >
-          <v-icon>{{ action.icon }}</v-icon>
-        </v-btn>
-      </div>
-    </div>
-    <div class="sub-table d-flex flex-column ga-1 pt-6">
+      <template #left>
+        <FileVariantManager
+          :currentFile="file"
+          type="subtitles"
+          @update:variant="loadSubtitles"
+        />
+      </template>
+      <template #popup="{ item }">
+        <FileManager
+          v-if="item.name === 'edit'"
+          :currentFile="file"
+          type="subtitles"
+          @update:current-file="loadSubtitles"
+        />
+      </template>
+    </ActionMenu>
+    <div
+      class="sub-table d-flex flex-column ga-1"
+      style="padding: 2.5rem 0 1rem 0"
+    >
       <div
         class="sub-table_row d-flex w-100"
         :class="{ 'sub-table_row_active': item.active && item.id !== undefined }"
@@ -85,146 +180,6 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: 'SubtitleTable',
-  emits: ['update-subtitle', 'update-file', 'extract-subtitles', 'hover-subtitle'],
-  props: {
-    subtitles: {
-      type: Array,
-      default: () => [],
-    },
-    hasVideo: {
-      type: Boolean,
-      default: false,
-    },
-    file: { String, default: '' },
-    rows: { Number, default: 0 },
-  },
-  data() {
-    return {
-      headers: [
-        { title: 'Start', value: 'start', align: 'center' },
-        { title: 'End', value: 'end', align: 'center' },
-        { title: 'Subtitle text', value: 'text', align: 'center' },
-      ],
-      actions: [
-        { icon: 'mdi-content-save', method: this.saveSubtitles },
-        { icon: 'mdi-pencil', method: this.changeSubtitles },
-        { icon: 'mdi-close', method: this.clearSubtitles },
-      ],
-      hovered: false,
-      extracting: false,
-    }
-  },
-  methods: {
-    extractSubtitles() {
-      this.extracting = true
-      this.$emit('extract-subtitles')
-    },
-    updateSubtitle(subtitle) {
-      this.$emit('update-subtitle', subtitle)
-    },
-    changeSubtitles() {
-      this.$refs.fileInput.click()
-    },
-    saveSubtitles() {
-      // TODO
-    },
-    clearSubtitles() {
-      this.$emit('update-subtitle', [])
-      this.$emit('update-file', '')
-    },
-    async loadSubtitles(file) {
-      try {
-        const { data } = await this.$apiService.sendMessage('load-subtitles', {
-          file,
-          isPath: true,
-        })
-        this.$emit('update-subtitle', this.$helpers.parseSubtitles(data))
-      } catch (error) {
-        console.error('Error uploading file:', error)
-      }
-    },
-    async handleSubtitleUpload(event) {
-      const file = event.target.files[0]
-      if (!file) {
-        // TODO Handle case where no file is selected
-        return
-      }
-
-      const reader = new FileReader()
-
-      reader.onload = async e => {
-        const fileContents = e.target.result
-
-        try {
-          const { data } = await this.$apiService.sendMessage('load-subtitles', {
-            file: fileContents,
-          })
-
-          if (!data) {
-            // TODO Handle error: data not received
-            return
-          }
-
-          this.$emit('update-file', file.name)
-          this.$emit('update-subtitle', this.$helpers.parseSubtitles(data))
-        } catch (error) {
-          // TODO Handle any errors, such as network issues or server errors
-          console.error('Error uploading file:', error)
-        }
-      }
-
-      reader.onerror = error => {
-        // TODO Handle errors that occur during the read operation
-        console.error('Error reading file:', error)
-      }
-
-      reader.readAsText(file) // Read the file as a text string
-    },
-  },
-  watch: {
-    subtitles: {
-      deep: true,
-      handler(newSubtitles) {
-        if (this.extracting && newSubtitles.length > 0) {
-          this.$emit('update-file', 'Extracted subtitles')
-          this.extracting = false
-        }
-      },
-    },
-    file: {
-      immediate: true,
-      handler(newFile) {
-        if (newFile && !this.subtitles.length) {
-          this.loadSubtitles(newFile)
-        }
-      },
-    },
-  },
-  computed: {
-    filename() {
-      return this.file?.split('/').pop() || ''
-    },
-    subtitleRows() {
-      if (this.subtitles.length < this.rows) {
-        return [
-          ...this.subtitles,
-          ...Array(this.rows - this.subtitles.length).fill({
-            start: '',
-            end: '',
-            text: '',
-          }),
-        ]
-      }
-      return this.subtitles
-    },
-  },
-}
-</script>
-
 <style scoped lang="scss">
 .subtitle-table {
   max-width: 600px;
@@ -235,14 +190,11 @@ input:focus {
   border: none;
 }
 .sub-table {
-  background-color: white;
+  background-color: var(--clr-background);
   border: 2px var(--clr-white) solid;
   border-radius: 20px;
   padding: 0.5rem;
-  --clr-cell: var(--clr-gray);
-  &_wrapper {
-    margin-top: 2rem;
-  }
+  --clr-cell: var(--clr-white);
   &_cell {
     color: var(--clr-cell);
     text-align: center;

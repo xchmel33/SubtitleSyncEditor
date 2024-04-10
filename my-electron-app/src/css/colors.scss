@@ -35,6 +35,10 @@
   --clr-black-2: #3D3D3D; /* Lighter shade */
   --clr-black-3: #4B4B4B; /* Even lighter shade */
 
+  --clr-background: #181a1b;
   --clr-primary: var(--clr-green);
 }
 
+.clr_white {
+  color: var(--clr-white);
+}

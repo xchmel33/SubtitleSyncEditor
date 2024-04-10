@@ -19,7 +19,9 @@ const apiService = {
   },
   sendMessage(channel, data, config) {
     if (!isElectron) {
-      console.log(data)
+      if (config?.method === 'GET') {
+        return axios.get(`http://localhost:3000/${channel}`)
+      }
       return axios.post(`http://localhost:3000/${channel}`, data, config)
     }
     return new Promise(resolve => {

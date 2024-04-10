@@ -5,3 +5,24 @@ extract subtitles from video:
 ffmpeg -i output.mp4 -map 0:s:0 -c:s srt extracted_subtitles.srt
 ffmpeg -i C:/Users/lukXmelo/Documents/GitHub/subSyncEditor/my-electron-app/videos/wot_burasque.mp4 -map 0:s:0 -c:s srt extracted_subtitles.srt
 ffmpeg -i C:/Users/lukXmelo/Documents/GitHub/subSyncEditor/my-electron-app/videos/output.mp4 -map 0:s:0 -c:s srt extracted_subtitles.srt
+
+
+task list:
+- add dtw algorithm lib
+    - detect speech lines
+    - draw ws regions on all speech lines
+    - add menu on region right click
+    - add dtw to region right click menu in order to align to region in other timeline
+    - add dtw to center button as option
+- add tabs for video files
+- add tabs for subtitle files
+- configure electron ipcMain.on to handle all events that are in devapp.js
+
+inherit from Subtitle Editor features:
+- split subtitle speech into multiple lines if it's too long
+- merge subtitle speech into one line
+- add CPS (characters per second) to subtitle
+- keyboard shortcuts
+
+last step:
+- styles

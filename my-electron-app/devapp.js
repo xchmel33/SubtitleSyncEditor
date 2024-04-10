@@ -1,8 +1,8 @@
 const express = require('express')
 const { exec } = require('child_process')
 const path = require('path')
-const url = require('url')
 const { extractSrtSubtitles, loadSrtSubtitles } = require('./backend/converter.js')
+const { getFiles, saveFile, getVariants, saveVariant } = require('./backend/fileManager.js')
 const cors = require('cors')
 const fs = require('fs')
 
@@ -24,10 +24,39 @@ app.post('/extract-subtitles', (req, res) => {
 })
 
 app.post('/load-subtitles', (req, res) => {
-  let { file, isPath } = req.body
-  if (isPath) file = fs.readFileSync(file).toString()
-  const data = loadSrtSubtitles(file)
+  let { filename, isPath } = req.body
+  if (isPath) {
+    filename = filename.replace(/[\r\n]/g, '')
+    filename = path.resolve(filename)
+    if (!fs.existsSync(filename)) {
+      res.status(404).json({ error: `File ${filename} not found` })
+      return
+    }
+  }
+  if (isPath) filename = fs.readFileSync(filename).toString()
+  const data = loadSrtSubtitles(filename)
   res.send(data)
+})
+
+app.get('/get-files', (req, res) => {
+  res.send(getFiles())
+})
+
+app.post('/save-file', (req, res) => {
+  const { file } = req.body
+  saveFile(file)
+  res.send({ status: 'ok' })
+})
+
+app.post('/get-variants', (req, res) => {
+  const { file } = req.body
+  res.send(getVariants(file))
+})
+
+app.post('/save-variant', (req, res) => {
+  const { file, variant } = req.body
+  saveVariant(file, variant)
+  res.send({ status: 'ok' })
 })
 
 app.post('/open-file-dialog', (req, res) => {
@@ -36,11 +65,7 @@ app.post('/open-file-dialog', (req, res) => {
     res.send({
       name: path.basename(stdout),
       error: error || stderr,
-      path: url.format({
-        pathname: path.resolve(stdout),
-        protocol: 'file:',
-        slashes: true,
-      }),
+      path: path.resolve(stdout),
     })
   })
 })

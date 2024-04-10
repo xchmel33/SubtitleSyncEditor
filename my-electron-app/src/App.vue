@@ -1,17 +1,16 @@
 <template>
   <div class="d-flex ga-4">
     <div
-      style="width: 30vw; height: 65vh"
+      style="width: 26vw; height: 60vh"
       v-for="(video, idx) in videos"
       :key="video.id"
       class="d-flex position-relative"
     >
-      <div class="h-100 w-100">
+      <div class="w-100 d-flex flex-column">
         <VideoPlayer
-          class="mb-10"
+          class="mb-4"
           :file="video.file"
-          :filename="video.filename"
-          @update:file="handleUpload($event, idx)"
+          @update:file="videos[idx].file = $event"
         />
         <SubtitleTable
           :rows="maxSubtitles"
@@ -25,41 +24,36 @@
         />
       </div>
       <div
-        style="position: absolute; right: 0; top: 52.5%; transform: translateX(66%); z-index: 1"
+        style="position: absolute; right: 0; top: 50%; transform: translateX(66%); z-index: 1"
         v-if="video.file && videos[idx + 1].id !== -1"
       >
         <v-btn
           icon
           small
+          style="border: 1px solid white"
           :class="`icon_button_link${video.sync ? '_active' : ''}`"
           @click="matchSubtitles(idx)"
-          ><v-icon>mdi-link</v-icon></v-btn
+          ><v-icon color="white">mdi-link</v-icon></v-btn
         >
       </div>
     </div>
   </div>
-  <div class="d-flex mt-8">
-    <div>
+  <div class="d-flex">
+    <div
+      style="overflow-x: auto"
+      class="d-flex flex-column ga-4"
+    >
       <div
         v-for="video in videos.filter(x => x.id !== -1)"
         :key="video.id"
       >
-        <v-progress-circular
-          v-if="loading"
-          indeterminate
-          color="orange"
-          size="64"
-          width="7"
-        />
         <WaveForm
-          v-show="!loading"
-          :subtitles="video.subtitles"
-          :video-name="video.filename"
+          :videoSubtitles="video.subtitles"
+          :video-name="video.file"
           :zoom-level="zoomLevel"
           :ws-start-pos="wsStartPos"
-          @load="loading = false"
-          @update-subtitle="handleSubtitleUpdate"
         />
+        <!--        @update-subtitle="handleSubtitleUpdate"-->
       </div>
     </div>
     <div class="h-100 d-flex justify-center align-center ga-5">
@@ -72,7 +66,8 @@
         <input
           type="range"
           id="time-zoom"
-          min="1"
+          min="2"
+          step="2"
           max="100"
           v-model="zoomLevel"
           class="rotated_input"
@@ -88,7 +83,8 @@
           type="range"
           id="wave-zoom"
           min="50"
-          max="200"
+          max="100"
+          step="2"
           v-model="wsStartPos"
           class="rotated_input"
         />
@@ -101,7 +97,6 @@
       v-if="error"
       class="position-fixed mt-4 alert"
       style="top: 0; left: 50%; transform: translateX(-50%); z-index: 99"
-      dismissible
       @click="error = ''"
     >
       {{ error }}
@@ -112,23 +107,23 @@
 import VideoPlayer from './components/VideoPlayer.vue'
 import SubtitleTable from '@/components/SubtitleTable.vue'
 import { defineAsyncComponent } from 'vue'
+import { parseSubtitles, compareSubtitles } from '@/helpers'
+
 export default {
   name: 'App',
   data() {
     return {
       videos: [
         {
-          id: 1,
+          id: 0,
           file: 'videos/ai_story_long_effects.mp4',
-          filename: 'ai_story_long_effects.mp4',
           subtitles: [],
           subtitle_file: 'videos/ai_story.srt',
           sync: false,
         },
         {
-          id: 2,
-          file: 'videos/output.mp4',
-          filename: 'output.mp4',
+          id: 1,
+          file: 'videos/siete.mkv',
           subtitles: [],
           subtitle_file: 'videos/output.srt',
           sync: false,
@@ -142,10 +137,8 @@ export default {
         },
       ],
       activeSubtitles: [],
-      loading: true,
-      error: '',
-      zoomLevel: 90,
-      wsStartPos: 0,
+      zoomLevel: 70,
+      wsStartPos: 64,
     }
   },
   components: {
@@ -160,42 +153,22 @@ export default {
         if (subtitle.match) {
           const { subtitleId, videoId } = subtitle.match
           this.videos[videoId].subtitles[subtitleId].text = subtitle.text
+          this.videos[videoId].subtitles[subtitleId].start = subtitle.start
+          this.videos[videoId].subtitles[subtitleId].end = subtitle.end
         }
       })
     },
-    handleHoverSubtitle(subtitle, video) {
-      if (!subtitle?.id) return
+    handleHoverSubtitle(subtitle, videoIdx) {
+      if (!this.videos[videoIdx].sync) return
       this.activeSubtitles.forEach(subtitle => (subtitle.active = false))
-      if (this.videos[video].subtitles[subtitle].match) {
-        const { subtitleId, videoId } = this.videos[video].subtitles[subtitle].match
+      if (this.videos[videoIdx].subtitles[subtitle].match) {
+        const { subtitleId, videoId } = this.videos[videoIdx].subtitles[subtitle].match
         this.videos[videoId].subtitles[subtitleId].active = true
         this.activeSubtitles.push(this.videos[videoId].subtitles[subtitleId])
       }
     },
-    handleUpload(file, index) {
-      if (index === -1) {
-        index = this.videos.length - 1
-      }
-      if (file.error) {
-        this.error = file.error.message
-        return
-      }
-      this.videos[index] = {
-        id: file ? index + 1 : -1,
-        file: file?.path || '',
-        filename: file?.name || '',
-      }
-      if (this.videos[index].id !== -1)
-        this.videos.push({
-          id: -1,
-          file: '',
-          filename: '',
-          subtitles: [],
-          sync: false,
-        })
-    },
     matchSubtitles(index) {
-      const match = this.$helpers.compareSubtitles(
+      const match = compareSubtitles(
         this.videos[index].subtitles,
         this.videos[index + 1].subtitles,
         index,
@@ -204,25 +177,31 @@ export default {
       console.log('Subtitles matched:', match)
     },
     async extractSubtitles(index) {
-      this.loading = true
       try {
         const { data } = await this.$apiService.sendMessage('extract-subtitles', {
           file: this.videos[index].file,
         })
         if (data) {
           console.log('Subtitles:', data)
-          this.videos[index].subtitles = this.$helpers.parseSubtitles(data)
+          this.videos[index].subtitles = parseSubtitles(data)
         }
       } catch (error) {
         console.error('Error extracting subtitles:', error)
         this.error = error?.response?.data?.error || ''
       }
-      this.loading = false
     },
   },
   computed: {
     maxSubtitles() {
-      return Math.max(...this.videos.map(video => video.subtitles.length))
+      return Math.max(...this.videos.map(video => video.subtitles?.length || 0))
+    },
+    error: {
+      get() {
+        return this.$error.message
+      },
+      set(value) {
+        this.$error.message = value
+      },
     },
   },
 }

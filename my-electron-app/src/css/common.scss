@@ -2,13 +2,13 @@
   border: var(--clr-gray-3) 2px solid;
   border-radius: 20px;
   padding: 1rem;
-  background-color: white;
-  color: black;
+  background-color: var(--clr-background);
+  color: white;
 }
 .icon_button {
   min-width: 1.75rem;
   height: 1.75rem !important;
-  background-color: #000;
+  background-color: var(--clr-background);
   margin: 0.25rem 0.05rem;
   padding: 0 !important;
   color: white;
@@ -20,11 +20,19 @@
   &_link{
     width: 2.5rem;
     height: 2.5rem;
+    background-color: var(--clr-background);
     &_active{
       background-color: var(--clr-green);
       color: var(--clr-white);
     }
   }
+}
+.text_button{
+  padding: 0.25rem 0.5rem;
+  background-color: var(--clr-background);
+  color: white;
+  border: 1px solid var(--clr-gray-1);
+  border-radius: 0.5rem;
 }
 .container_button {
   display: flex;
