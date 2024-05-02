@@ -3,8 +3,8 @@ import './style.css'
 import App from './App.vue'
 import apiService from '@/utilities/client.js'
 import vuetify from './plugins/vuetify'
-import PerfectScrollbar from 'vue3-perfect-scrollbar'
-import 'vue3-perfect-scrollbar/dist/vue3-perfect-scrollbar.css'
+import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar';
+import 'vue3-perfect-scrollbar/style.css';
 import 'vuetify/dist/vuetify.min.css'
 import '@mdi/font/css/materialdesignicons.min.css'
 import './css/colors.scss'
@@ -16,7 +16,7 @@ const globalLoad = reactive({ message: '' })
 
 // Use Vuetify instance here
 app.use(vuetify)
-app.use(PerfectScrollbar)
+app.use(PerfectScrollbarPlugin)
 
 app.config.globalProperties.$apiService = apiService
 app.config.globalProperties.$error = globalError

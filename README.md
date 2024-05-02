@@ -27,37 +27,39 @@ operating systems.
 
 
 # Setup
-install nvm:
-```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-```
-install node and npm:
-```bash
-nvm install v20.10.0
-```
-use installed node version:
-```bash
-nvm use v20.10.0
-```
-verify installation:
-```bash
-node --version
-```
-install dependencies:
-```bash
-npm install
-```
+- install nvm:
+    ```bash
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+    ```
+- restart your terminal
+
+- install node and npm:
+    ```bash
+    nvm install v20.10.0
+    ```
+- use installed node version:
+    ```bash
+    nvm use v20.10.0
+    ```
+- verify installation:
+    ```bash
+    node --version
+    ```
+- install dependencies:
+    ```bash
+    npm install
+    ```
 
 ## Build for production
-create vue3 build:
-```bash
-npm run build
-cp -r videos/ dist/
-```
-start electron:
-```bash
-npm run electron
-```
+- create vue3 build:
+    ```bash
+    npm run build
+    cp -r videos/ dist/
+    ```
+- start electron:
+    ```bash
+    npm run electron
+    ```
 
 ## Use for Development
 ```bash
