@@ -62,7 +62,7 @@ const alignSubtitle = async (index, alignmentData) => {
       const offsetMs = (offset / sampleRate) * 1000
       if (offset < 0) {
         const audioIndex = waveformsRef.value.indexOf(audioComponent)
-        emit('update:offset', { index: audioIndex, offset: -offset, offsetMs })
+        emit('update:offset', { index: audioIndex, offset: -offset, offsetMs: -offsetMs })
       } else {
         emit('update:offset', { index, offset, offsetMs })
       }

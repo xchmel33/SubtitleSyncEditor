@@ -5,6 +5,7 @@ extract subtitles from video
 ffmpeg -i inputFilePath -map 0:s:0 -c:s srt outputFilePath
 
 task list:
+- fix scroll into playback with longer files
 - replace menu with v-dialog https://vuetifyjs.com/en/components/dialogs/#usage
 - fix time zoom rendering
 - fix scrollbars on waveforms

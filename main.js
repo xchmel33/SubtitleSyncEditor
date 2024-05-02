@@ -12,6 +12,8 @@ const { mergeSrtSubtitles, saveSubtitles } = require('./backend/converter')
 const createWindow = async () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    width: 1280,
+    height: 720,
     maximizable: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

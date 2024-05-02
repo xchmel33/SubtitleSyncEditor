@@ -66,4 +66,7 @@ operating systems.
 npm run dev
 npm run devapp
 ```
-now go to localhost:8080 in web browser and you can use the app
+now go to localhost:8081 in web browser and you can use the app
+
+[Please use chrome browser, currently broken styles in firefox]
+

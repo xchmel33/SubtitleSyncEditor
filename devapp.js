@@ -133,7 +133,7 @@ app.post('/save-session', (req, res) => {
   const { session } = req.body
   fs.writeFileSync('./backend/session.json', JSON.stringify(session, null, 2))
   res.send({ status: 'ok' })
-  console.log('Session saved')
+  // console.log('Session saved')
 })
 
 app.post('/load-session', (req, res) => {
@@ -143,13 +143,21 @@ app.post('/load-session', (req, res) => {
   }
   const session = fs.readFileSync('./backend/session.json')
   res.send(JSON.parse(session.toString()))
-  console.log('Session loaded')
+  // console.log('Session loaded')
 })
 
 app.post('/cross-correlate', (req, res) => {
   const { segment, audio } = req.body
-  const { bestOffset } = crossCorrelate(segment, audio)
-  res.send({ bestOffset })
+
+  const startTime = process.hrtime() // Start timing
+  const average = 0
+  const { bestOffset } = crossCorrelate(segment, audio, average)
+  const endTime = process.hrtime(startTime) // End timing
+
+  // Convert [seconds, nanoseconds] to total seconds
+  const executionTime = endTime[0] + endTime[1] / 1e9
+  console.log(`Execution time: ${executionTime}s, average: ${average} samples`)
+  res.send({ bestOffset, executionTime })
 })
 
 app.listen(port, () => {

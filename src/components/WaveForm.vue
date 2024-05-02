@@ -122,8 +122,15 @@ const handleOpenWaveMenu = e => {
 }
 const handleTimeUpdate = () => {
   const container = document.getElementById('waveform-container')
+  const currentContainerWidth = ws.value.renderer.container.getBoundingClientRect().width
+  const maxWidth = Math.max(
+    ...Array.from(document.getElementsByClassName('waveform')).map(
+      x => x.children[0].shadowRoot.querySelector('.scroll').getBoundingClientRect().width,
+    ),
+  )
+  const containerRatio = currentContainerWidth / maxWidth
   const cursorPosPercent = ws.value.getCurrentTime() / ws.value.getDuration()
-  const scrollPos = container.scrollWidth * cursorPosPercent - 100 // 100 is cursor offset from start
+  const scrollPos = container.scrollWidth * cursorPosPercent * containerRatio - 100 // 100 is cursor offset from start
   container.scrollTo({
     left: scrollPos,
   })
@@ -460,6 +467,7 @@ const regionButtons = [
         <div
           ref="waveform"
           id="waveform"
+          class="waveform"
           style="width: 100%"
         ></div>
       </div>
