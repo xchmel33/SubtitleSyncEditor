@@ -1,0 +1,20 @@
+embed subtitles into video
+`ffmpeg -i inputFilePath -i subtitleFilePath -c copy -c:s mov_text -map 0 -map 1 outputFilePath
+`
+extract subtitles from video
+ffmpeg -i inputFilePath -map 0:s:0 -c:s srt outputFilePath
+
+task list:
+- replace menu with v-dialog https://vuetifyjs.com/en/components/dialogs/#usage
+- fix time zoom rendering
+- fix scrollbars on waveforms
+- settings
+
+optional tasks:
+- animation to action menu buttons
+- add merging of subtitles to key shortcuts
+- add more spellcheck languages
+- improve performance of aligning subtitles
+- improve performance of speech detection
+- add text to speech (working with provided api key)
+

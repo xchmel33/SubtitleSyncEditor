@@ -1,0 +1,78 @@
+[
+  {
+    "path": "videos/ai_story_long_effects.mp4",
+    "type": "video"
+  },
+  {
+    "path": "C:\\Users\\lukXmelo\\Videos\\2024-01-29 17-57-59.mp4\r\n",
+    "type": "video"
+  },
+  {
+    "path": "videos/siete.mkv",
+    "type": "video"
+  },
+  {
+    "path": "videos/output.mp4",
+    "type": "video"
+  },
+  {
+    "path": "C:\\Users\\lukXmelo\\Videos\\2024-03-07 14-36-12.mp4\r\n",
+    "type": "video"
+  },
+  {
+    "path": "C:\\Users\\lukXmelo\\Videos\\Filmora Output\\wot_test.mp4\r\n",
+    "type": "video"
+  },
+  {
+    "path": "C:\\Users\\lukXmelo\\Videos\\Filmora Output\\bench140edit.mp4\r\n",
+    "type": "video"
+  },
+  {
+    "path": "videos/output.srt",
+    "type": "subtitles",
+    "variants": []
+  },
+  {
+    "path": "videos/ai_story.srt",
+    "type": "subtitles",
+    "variants": [
+      "videos/output.srt"
+    ]
+  },
+  {
+    "path": "",
+    "type": "subtitles",
+    "variants": []
+  },
+  {
+    "path": "C:\\Users\\lukXmelo\\Documents\\GitHub\\subSyncEditor\\videos\\subs.srt",
+    "type": "subtitles",
+    "variants": []
+  },
+  {
+    "path": "videos\\example1.mp4",
+    "type": "video",
+    "variants": []
+  },
+  {
+    "path": "videos\\example1_extended.mp4",
+    "type": "video",
+    "variants": []
+  },
+  {
+    "path": "C:\\Users\\lukXmelo\\Documents\\GitHub\\subSyncEditor\\videos\\example1_extended.mp4",
+    "type": "video",
+    "variants": []
+  },
+  "No file selected",
+  {
+    "path": "C:\\Users\\lukXmelo\\Documents\\GitHub\\subSyncEditor\\videos\\example1_sub.mp4",
+    "type": "video",
+    "variants": []
+  },
+  {
+    "path": "videos\\example1_sub.mp4",
+    "type": "video",
+    "variants": []
+  }
+]

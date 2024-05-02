@@ -1,0 +1,32 @@
+1
+00:00:00,010 --> 00:00:01,172
+<font face="Serif" size="18">0</font>
+
+2
+00:00:01,306 --> 00:00:01,556
+<font face="Serif" size="18">ooaa kkd</font>
+
+3
+00:00:01,662 --> 00:00:02,312
+<font face="Serif" size="18">2</font>
+
+4
+00:00:03,298 --> 00:00:05,033
+<font face="Serif" size="18">3</font>
+
+5
+00:00:05,883 --> 00:00:06,736
+<font face="Serif" size="18">4</font>
+
+6
+00:00:07,169 --> 00:00:10,238
+<font face="Serif" size="18">5</font>
+
+7
+00:00:11,353 --> 00:00:12,275
+<font face="Serif" size="18">6</font>
+
+8
+00:00:12,462 --> 00:00:13,760
+<font face="Serif" size="18">7</font>
+

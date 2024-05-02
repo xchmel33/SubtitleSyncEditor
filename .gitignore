@@ -6,9 +6,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.vscode
 
-my-electron-app/node_modules
-my-electron-app/dist
+node_modules
+dist
 
 # Editor directories and files
 .vscode/*
