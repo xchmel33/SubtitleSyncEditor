@@ -10,6 +10,9 @@ lerna-debug.log*
 package-lock.json
 
 backend/cache
+backend/files.json
+backend/session.json
+
 videos
 node_modules
 dist
