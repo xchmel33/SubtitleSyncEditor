@@ -273,7 +273,7 @@ onBeforeUnmount(() => {
     position: fixed;
     z-index: var(--content-z-index, 10);
     background-color: var(--clr-black);
-    border-radius: 4px;
+    border-radius: 20px;
   }
 }
 </style>

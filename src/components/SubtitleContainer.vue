@@ -2,7 +2,7 @@
 import ActionMenu from '@/components/lib/ActionMenu.vue'
 import FileManager from '@/components/FileManager.vue'
 import { parseSubtitles, formatSubtitles } from '@/utilities/subtitles'
-import { ref, computed, getCurrentInstance, onMounted } from 'vue'
+import { ref, computed, getCurrentInstance, onMounted, reactive } from 'vue'
 import FileVariantManager from '@/components/FileVariantManager.vue'
 import SubtitleTable from '@/components/SubtitleTable.vue'
 
@@ -86,26 +86,28 @@ const subtitleRows = computed(() => {
   }
   return props.subtitles
 })
-const actions = [
+const getActions = () => [
   {
     name: 'extract',
     tooltip: 'Extract subtitles from video',
     icon: 'mdi-export',
     rotate: 90,
     method: () => emit('extract-subtitles'),
+    condition: props.hasVideo,
     hasPopup: false,
   },
   {
     name: 'save',
     tooltip: 'Save subtitles',
     icon: 'mdi-content-save',
+    condition: props.subtitles.length > 0,
     method: saveSubtitles,
     hasPopup: false,
   },
   {
     name: 'edit',
     tooltip: `${props.file ? 'Change' : 'Open'} file`,
-    icon: 'mdi-pencil',
+    icon: `${props.file ? 'mdi-pencil' : 'mdi-file-plus'}`,
     method: () => {},
     hasPopup: true,
   },
@@ -113,6 +115,7 @@ const actions = [
     name: 'close',
     tooltip: 'Close file',
     icon: 'mdi-close',
+    condition: props.file,
     method: closeSubtitles,
     hasPopup: false,
   },
@@ -132,7 +135,7 @@ onMounted(() => {
   >
     <ActionMenu
       style="padding: 0.5rem 0.25rem"
-      :options="actions"
+      :options="getActions().filter(action => action.condition === undefined || action.condition)"
       :active="hovered || menuOpen"
       @open="
         data => {

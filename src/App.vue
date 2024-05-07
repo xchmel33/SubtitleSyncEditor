@@ -220,7 +220,7 @@ onMounted(() => {
 <template>
   <div class="d-flex ga-4">
     <ContentContainer
-      style="height: 70vh"
+      style="height: 70vh; max-width: 50%"
       class="flex-1-1"
       v-for="(item, idx) in session.data"
       :key="item.id"
@@ -267,6 +267,7 @@ onMounted(() => {
 #app {
   padding: 0.5rem !important;
   max-width: 100vw !important;
+  width: 90vw;
 }
 html {
   overflow-y: hidden !important;

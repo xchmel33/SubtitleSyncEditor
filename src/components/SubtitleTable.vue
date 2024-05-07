@@ -24,8 +24,8 @@ const mergingSubtitles = ref(false)
 const headers = reactive([
   { title: 'Duration', value: 'duration', align: 'center', width: '4rem' },
   { title: 'CPS', value: 'cps', align: 'center', width: '4rem' },
-  { title: 'Subtitle text', value: 'text', align: 'center', width: '20rem' },
-  { title: 'Actions', value: 'actions', align: 'right', width: '4rem' },
+  { title: 'Subtitle text', value: 'text', align: 'center', width: '25rem' },
+  { title: 'Actions', value: 'actions', align: 'right', width: '6.5rem' },
 ])
 const activeSubtitle = ref(props.activeSubtitleProp)
 const splitSubtitles = idx => {
@@ -217,7 +217,7 @@ watch(
     tabindex="0"
     @keydown="handleMultipleKeyCombinations"
   >
-    <div class="table_row_header d-flex w-100 ga-1 mt-2">
+    <div class="table_row table_row_header d-flex w-100 ga-1 mt-2">
       <div
         v-for="header in headers"
         :key="header.value"
@@ -333,16 +333,18 @@ input:focus {
 .table_cell {
   font-size: 0.85rem;
   height: 1.6rem;
+}
+.table_cell,
+.table_cell_header {
   flex-grow: 1;
+  margin: auto;
   text-align: left;
-  margin: auto 0;
 }
 .table_row {
   margin: auto 0;
   align-items: center;
   height: 1.6rem;
-}
-.table_row_header {
+  padding: 0 0.5rem;
 }
 .table_row_hover:hover {
   background-color: rgba(var(--clr-primary-rgb), 0.2);

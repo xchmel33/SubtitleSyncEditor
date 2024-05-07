@@ -485,33 +485,27 @@ watch(
 
 const wsButtons = [
   {
-    label: 'Set playback time from here',
-    action: () => {
-      emit('set-time-to', menuPos.value.time)
-    },
-  },
-  {
     label: 'Add subtitle here',
     action: handleAddSubtitle,
   },
   {
     label: 'Detect subtitles',
+    condition: () => !props.videoSubtitles.length,
     action: drawRegions,
   },
   {
-    label: 'Reload subtitles',
-    action: updateRegionsFromSubtitles,
+    label: 'Reload waveform',
+    action: reload,
   },
   {
-    label: 'Reload waves',
-    action: reload,
+    label: 'Clear alignment',
+    condition: () => props.offset,
+    action: () => {
+      emit('clear-offset')
+    },
   },
 ]
 const regionButtons = [
-  {
-    label: 'Set playback time from here',
-    action: handleSetTimeToSubtitle,
-  },
   {
     label: 'Delete subtitle',
     action: handleDeleteSubtitle,
@@ -575,7 +569,7 @@ const regionButtons = [
           >
             <div style="font-size: small">{{ getFilename(videoName) }}</div>
             <button
-              v-for="button in wsButtons"
+              v-for="button in wsButtons.filter(btn => !btn.condition || btn.condition())"
               :key="button.label"
               class="text_button text_button_small"
               @click.stop="

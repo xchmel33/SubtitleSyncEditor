@@ -81,10 +81,15 @@
     color: var(--clr-black);
   }
 }
-.truncate{
+.truncate,
+.truncate_left{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.truncate_left{
+  direction: rtl
+}
+
 
 

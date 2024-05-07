@@ -74,6 +74,7 @@ const startPolling = () => {
     <ActionMenu
       :options="actions"
       :active="hovered || menuOpen"
+      style="z-index: 99"
       @open="
         data => {
           if (data === undefined) return

@@ -27,22 +27,37 @@ operating systems.
 
 
 # Setup
-1. Activate node environment:
+1. Install nodejs locally and activate node environment:
+- for linux:
 ```bash
-  # for linux
-  chmod +x ./install/env/env.linux.sh
-  source ./install/env/env.linux.sh
-  
-  # for windows
-  ./install/env/env.win.bat
-  
-  # for mac
-  chmod +x ./install/env/env.mac.sh
-  source ./install/env/env.mac.sh
+# install nodejs
+chmod +x ./install/linux/setup.sh
+./install/linux/setup.sh
+
+# activate node environment
+source ./install/linux/env.sh 
+```
+- for windows:
+```bash
+# install nodejs
+./install/windows/setup.ps
+
+# activate node environment
+./install/windows/env.bat 
+```
+- for mac:
+```bash
+# install nodejs
+chmod +x ./install/mac/setup.sh
+./install/mac/setup.sh
+
+# activate node environment
+source ./install/mac/env.sh # activate node environment
 ```
 2. verify installation:
 ```bash
 node --version
+npm --version
 ```
 3. install dependencies:
 ```bash

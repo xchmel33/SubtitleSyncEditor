@@ -67,7 +67,7 @@ watch(() => props.currentFile, getVariants)
       :class="{ tab_active: option === currentFile }"
       @click="handleClick(option)"
     >
-      {{ getFilename(option || 'No file selected') }}
+      <span class="truncate_left">{{ getFilename(option || 'No file selected') }}</span>
       <div
         v-if="showDelete && option === currentFile"
         class="tooltip-delete text_button"
@@ -101,15 +101,18 @@ watch(() => props.currentFile, getVariants)
   position: absolute;
   z-index: 99;
   background-color: red;
-  transform: translateY(0.25rem) translateX(-1rem);
+  transform: translateY(0.35rem) translateX(-1rem);
   width: 100%;
   font-size: 0.75rem;
 }
 .tab {
-  padding: 0.15rem 1rem;
+  padding: 0.25rem 1rem;
   cursor: pointer;
   border-radius: 0.5rem;
   border: 1px solid white;
+  max-width: 24rem;
+  font-size: 0.8rem;
+  flex: 1 1 auto;
   &_active {
     border-color: aqua;
   }

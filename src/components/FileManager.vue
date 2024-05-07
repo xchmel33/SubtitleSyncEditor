@@ -97,21 +97,21 @@ const handleOpenFile = async path => {
 <template>
   <div
     class="wrapper"
-    style="width: 450px"
+    style="width: 600px"
   >
     <div
       class="d-flex ga-1 align-center"
       style="color: white"
     >
-      <span style="width: 22.5%">Selected file:</span>
+      <span style="width: 17%; text-align: left">Selected file:</span>
       <span
-        style="width: 75%; font-size: 0.8rem; direction: rtl; text-align: left"
-        class="inner_container truncate flex-1-1"
+        style="width: 75%; font-size: 0.8rem; text-align: center"
+        class="inner_container truncate_left flex-1-1"
         >{{ currentFile || 'No file selected' }}</span
       >
     </div>
     <div class="text-start mt-2">
-      <span>Recent files:</span>
+      <span class="text-left">Recent files:</span>
       <div class="mt-1 inner_container inner_container_white">
         <perfect-scrollbar
           @wheel="handleScroll"
@@ -123,19 +123,23 @@ const handleOpenFile = async path => {
           >
             <button
               class="text_button_small text-left d-flex justify-space-between"
-              style="width: 95%; outline: none"
+              style="width: 97.5%; outline: none"
               @click="async () => await handleOpenFile(file.path)"
             >
-              <span>{{ getFilename(file.path) }}</span>
+              <span
+                style="max-width: 65%"
+                class="truncate_left"
+                >{{ getFilename(file.path) }}</span
+              >
               <span>{{ file.time || '' }}</span>
             </button>
           </div>
         </perfect-scrollbar>
       </div>
     </div>
-    <div>
+    <div class="d-flex">
       <button
-        class="text_button mt-2 w-100"
+        class="text_button ml-auto mt-3 px-4"
         @click="fileDialog"
       >
         Open new file
