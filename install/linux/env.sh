@@ -1,1 +1,1 @@
-export PATH="$PWD/install/linux/bin:$PATH"
+export PATH="$PWD/install/node/bin:$PATH"
