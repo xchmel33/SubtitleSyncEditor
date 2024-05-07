@@ -8,6 +8,7 @@ export const parseSubtitles = subtitles => {
       id: uniqueId(),
       text: x.text.replace(/<[^>]+>/g, ''),
       match: null,
+      duration: (x.end - x.start) / 1000,
     }))
 }
 
@@ -63,4 +64,18 @@ export const compareSubtitlesByTime = ({ subtitles1, subtitles2, index, toMatchI
     }
   })
   return matched
+}
+
+export const adjustSubtitleTimes = ({ subtitleToAdd, after, nextSubtitle }) => {
+  const A = after.end - after.start
+  const B = subtitleToAdd.end - subtitleToAdd.start
+  const C = nextSubtitle.end - subtitleToAdd.start
+  const y = (A + C - B) / ((A * A) / C + C)
+  const x = (A / C) * y
+  const newAfterDuration = A * x
+  const newNextDuration = C * y
+  after.end = after.start + newAfterDuration
+  nextSubtitle.start = nextSubtitle.end - newNextDuration
+  subtitleToAdd.start = after.end + 10
+  subtitleToAdd.end = nextSubtitle.start - 10
 }

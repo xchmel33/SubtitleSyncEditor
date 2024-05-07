@@ -9,6 +9,7 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  activeSubtitleProp: { Object, default: () => null },
 })
 const emit = defineEmits([
   'add-subtitle',
@@ -19,53 +20,61 @@ const emit = defineEmits([
   'play-subtitle',
 ])
 const subtitleTable = ref(null)
-const subtitleRows = ref(props.subtitles)
 const mergingSubtitles = ref(false)
 const headers = reactive([
   { title: 'Duration', value: 'duration', align: 'center', width: '4rem' },
   { title: 'CPS', value: 'cps', align: 'center', width: '4rem' },
-  { title: 'Subtitle text', value: 'text', align: 'center', width: '16rem' },
+  { title: 'Subtitle text', value: 'text', align: 'center', width: '20rem' },
   { title: 'Actions', value: 'actions', align: 'right', width: '4rem' },
 ])
+const activeSubtitle = ref(props.activeSubtitleProp)
 const splitSubtitles = idx => {
-  const subtitle = subtitleRows.value[idx]
+  const subtitle = props.subtitles[idx]
   const split = smartSplit(subtitle.text)
   const duration = subtitle.end - subtitle.start
   const end = subtitle.end
-  subtitleRows.value[idx].text = split[0]
-  subtitleRows.value[idx].end = subtitle.start + duration / 2
-  subtitleRows.value.splice(idx + 1, 0, {
-    start: subtitle.start + duration / 2,
-    end,
-    text: split[1],
-    id: uniqueId(),
+  subtitle.text = split[0]
+  subtitle.end = subtitle.start + duration / 2
+  emit('update-subtitle', { item: subtitle, index: idx })
+  emit('add-subtitle', {
+    newSubtitle: {
+      start: subtitle.start + duration / 2,
+      end,
+      text: split[1],
+      id: uniqueId(),
+    },
+    after: subtitle,
+    afterIndex: idx,
   })
 }
 
 const startMerging = () => {
   mergingSubtitles.value = true
+  activeSubtitle.value.merge = true
   window.addEventListener('mouseup', mergeSubtitles)
 }
 const mergeSubtitles = () => {
   if (!mergingSubtitles.value) return
   mergingSubtitles.value = false
-  const toMerge = subtitleRows.value.filter(subtitle => subtitle.merge)
+  const toMerge = props.subtitles.filter(subtitle => subtitle.merge)
   const finalText = toMerge.reduce((acc, subtitle) => acc + ' ' + subtitle.text, '')
   const finalEnd = toMerge[toMerge.length - 1].end
   const last = toMerge.pop()
   last.text = finalText
   last.end = finalEnd
   last.start = toMerge[0].start
+  last.merge = false
+  emit('update-subtitle', { item: last, index: props.subtitles.indexOf(last) })
   toMerge.forEach(subtitle => {
-    const idx = subtitleRows.value.findIndex(x => x.id === subtitle.id)
-    subtitleRows.value.splice(idx, 1)
+    emit('delete-subtitle', subtitle)
   })
+  activeSubtitle.value.merge = false
   window.removeEventListener('mouseup', mergeSubtitles)
 }
 
 const calculateCPS = item => {
   const duration = (item.end - item.start) / 1000
-  const chars = item.text.length
+  const chars = item.text?.length || 0
   return numFixed(chars / duration, 2)
 }
 const colorizeCPS = item => {
@@ -78,28 +87,38 @@ const calculateDuration = item => {
   item.duration = numFixed((item.end - item.start) / 1000, 2)
   return item.duration
 }
+const activateSubtitle = (index, scroll = false) => {
+  if (!props.subtitles[index]) {
+    console.log('No subtitle at index', index)
+    return
+  }
+  activeSubtitle.value = props.subtitles[index]
+  if (scroll)
+    document.getElementById(`subtitle_${activeSubtitle.value.id}`).scrollIntoView({
+      block: 'center',
+    })
+  emit('activate-subtitle', activeSubtitle.value)
+}
 const activateSubtitleSibling = (e, sibling = 1) => {
+  e.stopPropagation()
   // if (document.activeElement?.tagName === 'INPUT' && !e.ctrlKey) e.stopPropagation()
+  if (!activeSubtitle.value) return activateSubtitle(0)
   if (document.activeElement) {
     document.activeElement.blur()
     subtitleTable.value.focus()
   }
-  let nextIndex = subtitleRows.value.findIndex(x => x.active) + sibling
-  if (nextIndex < 0) nextIndex = subtitleRows.value.length - 1
-  if (nextIndex >= subtitleRows.value.length) nextIndex = 0
-  const subtitleToActivate = subtitleRows.value[nextIndex]
-  if (!subtitleToActivate) return
-  emit('activate-subtitle', subtitleToActivate)
+  let nextIndex = props.subtitles.indexOf(activeSubtitle.value) + sibling
+  if (nextIndex < 0) nextIndex = props.subtitles.length - 1
+  if (nextIndex >= props.subtitles.length) nextIndex = 0
+  activateSubtitle(nextIndex, true)
 }
 const playFromActiveSubtitle = () => {
-  const activeSubtitle = subtitleRows.value.find(x => x.active)
-  if (!activeSubtitle) return
-  emit('play-subtitle', (activeSubtitle?.start || 0) / 1000)
+  if (!activeSubtitle.value) return
+  emit('play-subtitle', (activeSubtitle.value.start || 0) / 1000)
 }
 const selectActiveSubtitle = () => {
-  const activeSubtitle = subtitleRows.value.find(x => x.active)
-  if (!activeSubtitle) return
-  const activeSubtitleInput = document.getElementById(`text_${activeSubtitle.id}`)
+  if (!activeSubtitle.value) return
+  const activeSubtitleInput = document.getElementById(`text_${activeSubtitle.value.id}`)
   if (document.activeElement === activeSubtitleInput) {
     activeSubtitleInput.blur()
     subtitleTable.value.focus()
@@ -108,47 +127,55 @@ const selectActiveSubtitle = () => {
   }
 }
 const duplicateActiveSubtitle = () => {
-  const activeSubtitle = subtitleRows.value.find(x => x.active)
-  if (!activeSubtitle) return
-  const idx = subtitleRows.value.findIndex(x => x.id === activeSubtitle.id)
-  const newSubtitle = { ...activeSubtitle, id: uniqueId(), active: false }
-  subtitleRows.value.splice(idx + 1, 0, newSubtitle)
-  emit('update-subtitles', subtitleRows.value)
+  if (!activeSubtitle.value) return
+  const idx = props.subtitles.indexOf(activeSubtitle.value)
+  const newSubtitle = {
+    text: activeSubtitle.value.text,
+    id: uniqueId(),
+    start: activeSubtitle.value.end + 10,
+    end: activeSubtitle.value.end + 10 + (activeSubtitle.value.end - activeSubtitle.value.start),
+  }
+  emit('add-subtitle', { after: activeSubtitle.value, afterIndex: idx, newSubtitle })
 }
 const splitActiveSubtitle = () => {
-  const activeSubtitle = subtitleRows.value.find(x => x.active)
-  if (!activeSubtitle) return
-  const idx = subtitleRows.value.findIndex(x => x.id === activeSubtitle.id)
-  splitSubtitles(idx)
+  if (!activeSubtitle.value) return
+  splitSubtitles(props.subtitles.indexOf(activeSubtitle.value))
 }
 const addSubtitleAfterActive = () => {
-  const activeSubtitle = subtitleRows.value.find(x => x.active)
-  if (!activeSubtitle) return
-  emit('add-subtitle', activeSubtitle)
+  if (!activeSubtitle.value) return
+  emit('add-subtitle', {
+    after: activeSubtitle.value,
+    afterIndex: props.subtitles.indexOf(activeSubtitle.value),
+  })
 }
 const addItalic = () => {
-  const activeSubtitle = subtitleRows.value.find(x => x.active)
-  if (!activeSubtitle) return
-  const idx = subtitleRows.value.findIndex(x => x.id === activeSubtitle.id)
-  if (activeSubtitle.text.startsWith('<i>')) {
-    subtitleRows.value[idx].text = activeSubtitle.text.replace('<i>', '').replace('</i>', '')
+  if (!activeSubtitle.value) return
+  if (activeSubtitle.value?.text.startsWith('<i>')) {
+    activeSubtitle.value.text = activeSubtitle.value?.text.replace('<i>', '').replace('</i>', '')
     return
   }
-  subtitleRows.value[idx].text = `<i>${subtitleRows.value[idx].text}</i>`
+  activeSubtitle.value.text = `<i>${activeSubtitle.value.text}</i>`
 }
 const createConversation = () => {
-  const activeSubtitle = subtitleRows.value.find(x => x.active)
-  if (!activeSubtitle) return
-  const split = smartSplit(activeSubtitle.text)
-  const newText = `- ${split[0]}\n- ${split[1]}`
-  const idx = subtitleRows.value.findIndex(x => x.id === activeSubtitle.id)
-  subtitleRows.value[idx].text = newText
+  if (!activeSubtitle.value) return
+  const split = smartSplit(activeSubtitle.value?.text || '')
+  activeSubtitle.value.text = `- ${split[0]}\n- ${split[1]}`
 }
 const handleMultipleKeyCombinations = e => {
   if (document.activeElement.tagName === 'INPUT' && e.key.length === 1) return
   const keyConfigurations = [
     { targetKey: 'ArrowDown', callback: () => activateSubtitleSibling(e, 1) },
     { targetKey: 'ArrowUp', callback: () => activateSubtitleSibling(e, -1) },
+    {
+      targetKey: 'ArrowDown',
+      ctrl: true, //
+      callback: () => activateSubtitle(0, true),
+    },
+    {
+      targetKey: 'ArrowUp',
+      ctrl: true,
+      callback: () => activateSubtitle(props.subtitles.length - 1, true),
+    },
     { targetKey: 'q', callback: playFromActiveSubtitle },
     { targetKey: 'Enter', callback: selectActiveSubtitle },
     { targetKey: 'D', shift: true, callback: duplicateActiveSubtitle },
@@ -163,64 +190,60 @@ const handleMultipleKeyCombinations = e => {
       e,
       targetKey: config.targetKey,
       shift: config.shift || false,
+      ctrl: config.ctrl || false,
       callback: config.callback,
     })
   })
 }
-const isHover = item => {
-  const isActive = subtitleRows.value.some(x => x.active)
-  return item.id !== undefined && item.hover && !isActive
-}
 const deactivateAllSubtitles = () => {
-  subtitleRows.value.forEach(subtitle => (subtitle.active = false))
+  activeSubtitle.value = null
   document.activeElement?.blur()
+  emit('activate-subtitle', null)
 }
 watch(
-  () => props.subtitles,
+  () => props.activeSubtitleProp,
   () => {
-    subtitleRows.value = props.subtitles
+    activeSubtitle.value = props.activeSubtitleProp
   },
-  { deep: true },
+  { immediate: true },
 )
 </script>
 
 <template>
   <div
     ref="subtitleTable"
-    class="table d-flex flex-column ga-1 no-focus-outline"
+    class="table d-flex flex-column no-focus-outline"
     style="padding: 2.5rem 0 1rem 0"
     tabindex="0"
     @keydown="handleMultipleKeyCombinations"
   >
-    <perfect-scrollbar>
-      <div class="table_row d-flex w-100 ga-1">
-        <div
-          v-for="header in headers"
-          :key="header.value"
-          class="table_cell"
-          :style="{ width: header.width }"
-        >
-          <span v-if="header.value !== 'actions'">{{ header.title }}</span>
-        </div>
+    <div class="table_row_header d-flex w-100 ga-1 mt-2">
+      <div
+        v-for="header in headers"
+        :key="header.value"
+        class="table_cell_header mt-auto"
+        :style="{ width: header.width }"
+      >
+        <span v-if="header.value !== 'actions'">{{ header.title }}</span>
       </div>
+    </div>
+    <perfect-scrollbar>
       <div
         class="table_row d-flex w-100 ga-1"
+        :id="`subtitle_${item.id}`"
         :class="{
-          table_row_hover: isHover(item),
-          table_row_active: item.active && item.id !== undefined,
+          table_row_active: activeSubtitle?.id === item.id,
           table_row_merge: item.merge,
+          table_row_hover: !activeSubtitle,
         }"
-        v-for="(item, idx) in subtitleRows"
+        v-for="(item, idx) in subtitles"
         :key="item.id"
+        @click="activateSubtitle(idx)"
         @mouseover="
           () => {
-            $emit('hover-subtitle', item.id)
-            item.hover = true
             if (mergingSubtitles) item.merge = true
           }
         "
-        @mouseleave="() => (item.hover = false)"
-        @click="$emit('activate-subtitle', item)"
       >
         <div
           v-for="header in headers"
@@ -236,7 +259,7 @@ watch(
           </span>
           <span v-else-if="header.value === 'duration'"> {{ calculateDuration(item) }} s </span>
           <div
-            v-else-if="header.value === 'actions' && item.active"
+            v-else-if="header.value === 'actions' && activeSubtitle?.id === item.id"
             class="d-flex ga-1 table_cell"
             style="width: 4rem"
           >
@@ -260,7 +283,7 @@ watch(
               icon="mdi-plus"
               class="my-auto"
               tooltip="Add subtitle after"
-              @click="$emit('add-subtitle', item)"
+              @click="addSubtitleAfterActive"
             />
             <ActionBtn
               size="small"
@@ -299,26 +322,31 @@ input:focus {
   border-radius: 20px;
   padding: 0.5rem;
   --clr-cell: var(--clr-white);
-  &_row_hover {
-    background-color: rgba(var(--clr-primary-rgb), 0.2);
-    --clr-cell: var(--clr-white) !important;
-  }
   &_row_active {
-    background-color: rgba(var(--clr-primary-rgb), 0.4);
+    background-color: rgba(var(--clr-primary-rgb), 0.4) !important;
     --clr-cell: var(--clr-white) !important;
   }
   &_row_merge {
-    background-color: aqua;
-    font-weight: bold;
+    background-color: aqua !important;
   }
 }
 .table_cell {
-  height: 1.5rem;
+  font-size: 0.85rem;
+  height: 1.6rem;
   flex-grow: 1;
   text-align: left;
+  margin: auto 0;
 }
 .table_row {
+  margin: auto 0;
   align-items: center;
+  height: 1.6rem;
+}
+.table_row_header {
+}
+.table_row_hover:hover {
+  background-color: rgba(var(--clr-primary-rgb), 0.2);
+  --clr-cell: var(--clr-white) !important;
 }
 .ps {
   height: calc(70vh * 0.5);

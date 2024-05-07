@@ -2,7 +2,7 @@
 import ActionMenu from '@/components/lib/ActionMenu.vue'
 import FileManager from '@/components/FileManager.vue'
 import { parseSubtitles, formatSubtitles } from '@/utilities/subtitles'
-import { ref, reactive, computed, watch, getCurrentInstance, onMounted } from 'vue'
+import { ref, computed, getCurrentInstance, onMounted } from 'vue'
 import FileVariantManager from '@/components/FileVariantManager.vue'
 import SubtitleTable from '@/components/SubtitleTable.vue'
 
@@ -19,12 +19,11 @@ const props = defineProps({
   },
   file: { String, default: '' },
   rows: { Number, default: 0 },
+  activeSubtitle: { Object, default: () => null },
 })
 
 const hovered = ref(false)
 const menuOpen = ref(false)
-const extracting = ref(false)
-
 const emit = defineEmits([
   'update-subtitle',
   'update-subtitles',
@@ -43,8 +42,9 @@ const loadSubtitles = async filename => {
       filename,
       isPath: true,
     })
+    const parsed = parseSubtitles(data)
     emit('update-file', filename)
-    emit('update-subtitles', parseSubtitles(data))
+    emit('update-subtitles', parsed)
   } catch (error) {
     $error.message = error?.response?.data?.error || ''
   }
@@ -86,7 +86,7 @@ const subtitleRows = computed(() => {
   }
   return props.subtitles
 })
-const actions = reactive([
+const actions = [
   {
     name: 'extract',
     tooltip: 'Extract subtitles from video',
@@ -116,23 +116,13 @@ const actions = reactive([
     method: closeSubtitles,
     hasPopup: false,
   },
-])
+]
 
 onMounted(() => {
   if (props.file && !props.subtitles.length) {
     loadSubtitles(props.file)
   }
 })
-watch(
-  () => props.subtitles,
-  newSubtitles => {
-    if (extracting.value && newSubtitles.length > 0) {
-      emit('update-file', 'Extracted subtitles')
-      extracting.value = false
-    }
-  },
-  { deep: true },
-)
 </script>
 <template>
   <div
@@ -156,10 +146,12 @@ watch(
           :currentFile="file"
           type="subtitles"
           @update:variant="loadSubtitles"
+          @keep-menu-open="menuOpen = $event"
         />
       </template>
       <template #popup="{ item }">
         <FileManager
+          ref="fileManager"
           v-if="item.name === 'edit'"
           :currentFile="file"
           type="subtitles"
@@ -169,6 +161,7 @@ watch(
     </ActionMenu>
     <SubtitleTable
       :subtitles="subtitleRows"
+      :activeSubtitleProp="props.activeSubtitle"
       @activate-subtitle="$emit('activate-subtitle', $event)"
       @hover-subtitle="$emit('hover-subtitle', $event)"
       @update-subtitle="$emit('update-subtitle', $event)"

@@ -1,28 +1,25 @@
-const { stringifySync } = require('subtitle')
-const fs = require('fs')
+const convertVideoPathToWav = filepath => {
+  // Replace all slashes and backslashes with underscores
+  let filename = filepath.replace(/[/\\]/g, '_')
 
-const saveSubtitles = (subtitles, outputFilePath, format = 'SRT') => {
-  subtitles = subtitles.map(x => ({
-    type: 'cue',
-    data: x,
-  }))
-  const srtString = stringifySync(subtitles, { format })
-  console.log(srtString)
-  fs.writeFileSync(outputFilePath, srtString)
+  // remove invalid characters
+  filename = filename.replace(/[^a-zA-Z0-9_.-]/g, '')
+
+  // Change the file extension to .wav
+  filename = filename.replace(/\.\w+$/, '.wav')
+
+  if (filename.startsWith('_')) {
+    filename = filename.slice(1)
+  }
+
+  return filename
 }
 
-const subtitles = [
-  {
-    start: 0,
-    end: 5000,
-    text: 'Hello, world!',
-  },
-  {
-    start: 5000,
-    end: 10000,
-    text: 'This is a test subtitle.',
-  },
-]
-
-// saveSrtSubtitles(subtitles, './subtitles.srt')
-saveSrtSubtitles(subtitles, './subtitles.vtt')
+// Example usage
+const path1 =
+  'C:\\Users\\lukXmelo\\Documents\\GitHub\\subSyncEditor\\videos\\Maids.S01E01.1080p.WEB-DL.H264.AAC-AppleTor.mp4'
+const path2 = '\\media\\videos\\video1.mp4'
+const newFilename = convertVideoPathToWav(path1)
+const newFilename2 = convertVideoPathToWav(path2)
+console.log(newFilename) // Output: _media_videos_video1.wav
+console.log(newFilename2) // Output: _media_videos_video1.wav

@@ -5,17 +5,26 @@ extract subtitles from video
 ffmpeg -i inputFilePath -map 0:s:0 -c:s srt outputFilePath
 
 task list:
-- fix scroll into playback with longer files
+- refactor menus
+    - clear alignment needs to be everywhere
+    - concat reload subtitles and reload waves into one
+    - set active on click & set playback
+    - remove set playback from here
+- test electron build
+    - windows
+    - linux
+- fix all styles
+    - subtitle table
+    - truncate file variant preview
+- playwright tests
+    - add tests for some features
 - replace menu with v-dialog https://vuetifyjs.com/en/components/dialogs/#usage
-- fix time zoom rendering
-- fix scrollbars on waveforms
 - settings
 
 optional tasks:
 - animation to action menu buttons
 - add merging of subtitles to key shortcuts
 - add more spellcheck languages
-- improve performance of aligning subtitles
 - improve performance of speech detection
 - add text to speech (working with provided api key)
 

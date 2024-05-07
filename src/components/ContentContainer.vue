@@ -108,6 +108,7 @@ const handlePlayFromSubtitle = start => {
         :subtitles="item.subtitleRows"
         :has-video="!!item.videoFile"
         :file="item.subtitleFile"
+        :activeSubtitle="item.active"
         @update-file="$emit('update:subtitleFile', $event)"
         @update-subtitles="$emit('update:subtitles', $event)"
         @update-subtitle="$emit('update:subtitle', $event)"

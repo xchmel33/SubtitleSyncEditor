@@ -11,9 +11,12 @@ const apiService = {
       }
       return await axios.post(`http://localhost:3000/${channel}`, data, config)
     }
-    return {
+    console.log('API request:', channel, data)
+    const response = {
       data: await window.electron.ipcRenderer.invoke(channel, data),
     }
+    console.log('API response:', response)
+    return response
   },
 }
 

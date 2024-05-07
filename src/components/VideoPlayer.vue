@@ -13,6 +13,8 @@ const props = defineProps({
 
 const time = ref(0)
 const menuOpen = ref(false)
+const hovered = ref(false)
+const videoPlayer = ref(null)
 const actions = ref([
   {
     name: 'save',
@@ -34,8 +36,6 @@ const actions = ref([
     method: () => emits('update:file', ''),
   },
 ])
-const hovered = ref(false)
-const videoPlayer = ref(null)
 
 const handlePickFile = file => {
   console.log('Picked file:', file)
@@ -54,7 +54,16 @@ const handleTimeUpdate = () => {
 
 onMounted(() => {
   setVideoTime()
+  startPolling()
 })
+
+const startPolling = () => {
+  const poll = () => {
+    handleTimeUpdate()
+    requestAnimationFrame(poll)
+  }
+  requestAnimationFrame(poll)
+}
 </script>
 <template>
   <div

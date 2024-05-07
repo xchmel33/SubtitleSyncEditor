@@ -122,6 +122,53 @@ const loadFromFile = (callback, filePath) => {
   })
 }
 
+const convertToWave = (videoFilePath, wavFilePath, sampleRate) => {
+  return new Promise((resolve, reject) => {
+    ffmpeg(videoFilePath)
+      .audioCodec('pcm_s16le') // Set the audio codec
+      .audioFrequency(sampleRate) // Set the sample rate
+      .audioChannels(1) // Set to mono audio
+      .format('wav') // Set the output format
+      .on('end', () => {
+        console.log(`Audio extracted to: ${wavFilePath}`)
+        resolve(wavFilePath)
+      })
+      .on('error', err => {
+        console.error('An error occurred: ' + err.message)
+        reject(err)
+      })
+      .save(wavFilePath) // Output file path
+  })
+}
+const convertVideoPathToWav = filepath => {
+  // Replace all slashes and backslashes with underscores
+  let filename = filepath.replace(/[/\\]/g, '_')
+
+  // remove invalid characters
+  filename = filename.replace(/[^a-zA-Z0-9_.-]/g, '')
+
+  // Change the file extension to .wav
+  filename = filename.replace(/\.\w+$/, '.wav')
+
+  if (filename.startsWith('_')) {
+    filename = filename.slice(1)
+  }
+
+  return filename
+}
+
+const getWav = async (videoFilename, sampleRate) => {
+  if (!fs.existsSync('./backend/cache')) {
+    fs.mkdirSync('./backend/cache')
+  }
+  const wavFilename = `backend/cache/${convertVideoPathToWav(videoFilename)}`
+  if (fs.existsSync(wavFilename)) {
+    console.log(`Loaded cached WAV file: ${wavFilename}`)
+    return wavFilename
+  }
+  return await convertToWave(videoFilename, wavFilename, sampleRate)
+}
+
 module.exports = {
   loadFromFile,
   convertToMp3,
@@ -129,4 +176,5 @@ module.exports = {
   mergeSrtSubtitles,
   loadSrtSubtitles,
   saveSubtitles,
+  getWav,
 }

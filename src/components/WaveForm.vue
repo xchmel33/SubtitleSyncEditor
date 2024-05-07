@@ -2,8 +2,12 @@
 import WaveSurfer from 'wavesurfer.js'
 import Hover from 'wavesurfer.js/dist/plugins/hover.js'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.js'
-import { ref, onMounted, watch, computed } from 'vue'
+import { onMounted, ref, watch, getCurrentInstance, nextTick } from 'vue'
 import MenuPopup from '@/components/lib/MenuPopup.vue'
+import { getFilename, loadWav } from '@/utilities/helpers'
+import { debounce } from 'lodash'
+
+const { $update, $loading } = getCurrentInstance().appContext.config.globalProperties
 
 const props = defineProps({
   videoSubtitles: {
@@ -15,12 +19,12 @@ const props = defineProps({
     default: '',
   },
   zoomLevel: {
-    type: Number,
-    default: 85,
+    type: String,
+    default: '85',
   },
   wsStartPos: {
-    type: Number,
-    default: 100,
+    type: String,
+    default: '100',
   },
   currentTime: {
     type: Number,
@@ -30,14 +34,18 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  idx: {
+    type: Number,
+    default: -1,
+  },
 })
+console.log('WaveForm idx:', props.idx)
 
 const loading = ref(true)
 const waveform = ref(null)
 const ws = ref(null)
 const wsRegions = ref(null)
 const decoded = ref(false)
-const subtitles = ref(props.videoSubtitles)
 const time = ref(props.currentTime)
 const openWaveMenu = ref(null)
 const openRegionMenu = ref(null)
@@ -54,46 +62,84 @@ const emit = defineEmits([
   'set-time-to',
 ])
 
-const videoElement = computed(() => document.getElementById(`video_player_${props.videoName}`))
+// const videoElement = computed(() => document.getElementById(`video_player_${props.videoName}`))
 
-const addRegion = (start, end, text) => {
+const addRegion = subtitle => {
   const region = wsRegions.value.addRegion({
-    start,
-    end,
+    start: subtitle.start / 1000,
+    end: subtitle.end / 1000,
     loop: false,
     color: 'hsla(300, 100%, 30%, 0.5)',
     drag: true,
     resize: true,
-    content: text || '',
+    content: subtitle.text || '',
     contentEditable: true,
   })
+  region.subId = subtitle.id
+  Object.assign(region.content.style, {
+    display: 'block',
+    fontSize: '0.75rem',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  })
+  region.content.parentElement.style.display = 'flex'
   return region
 }
+
+const updateRegion = (subtitle, region) => {
+  if (region) {
+    region.setOptions({
+      content: subtitle.text || ' ',
+      start: subtitle.start / 1000,
+      end: subtitle.end / 1000,
+    })
+    Object.assign(region.content.style, {
+      margin: 'auto',
+      display: 'block',
+      fontSize: '0.75rem',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    })
+    region.content.parentElement.style.display = 'flex'
+  } else {
+    addRegion(subtitle)
+  }
+}
+
 const updateRegionsFromSubtitles = () => {
-  wsRegions.value.regions.forEach(region => {
-    if (region && !region.wasRemoved) {
-      region.remove()
-      region.wasRemoved = true
-      const i = wsRegions.value.regions.indexOf(region)
-      delete wsRegions.value.regions[i]
-    }
-  })
-  subtitles.value.forEach(subtitle => {
-    const region = addRegion(subtitle.start / 1000, subtitle.end / 1000, subtitle.text)
-    region.subId = subtitle.id
+  $loading.message = 'Loading subtitles into waveform...'
+  $loading.stuck = true
+  setTimeout(() => {
+    requestAnimationFrame(() => {
+      wsRegions.value.regions.forEach(region => {
+        if (region && !region.wasRemoved) {
+          region.remove()
+          region.wasRemoved = true
+          const i = wsRegions.value.regions.indexOf(region)
+          delete wsRegions.value.regions[i]
+        }
+      })
+      props.videoSubtitles.forEach(subtitle => {
+        addRegion(subtitle)
+      })
+      setTimeout(() => {
+        $loading.message = ''
+        $loading.stuck = false
+      })
+    })
   })
 }
 const updateSubtitleFromRegion = region => {
-  const subtitleIndex = subtitles.value.findIndex(sub => sub.id === region.subId)
-  if (subtitleIndex !== -1) {
-    subtitles.value[subtitleIndex].start = region.start * 1000
-    subtitles.value[subtitleIndex].end = region.end * 1000
-    subtitles.value[subtitleIndex].text = region.content.textContent
-    emit('update-subtitle', { item: subtitles.value[subtitleIndex], index: subtitleIndex })
+  const subtitle = props.videoSubtitles.find(sub => sub.id === region.subId)
+  if (subtitle) {
+    subtitle.start = region.start * 1000
+    subtitle.end = region.end * 1000
+    subtitle.text = region.content.textContent
+    emit('update-subtitle', { item: subtitle, index: props.videoSubtitles.indexOf(subtitle) })
   }
 }
 const handleRegionDrag = region => {
-  const regions = wsRegions.value.getRegions()
+  const regions = wsRegions.value.getRegions().sort((a, b) => a.start - b.start)
   const regionIndex = regions.indexOf(region)
   const regionStart = region.start
   const regionEnd = region.end
@@ -117,10 +163,13 @@ const handleRegionDrag = region => {
   }
 }
 const handleOpenWaveMenu = e => {
-  menuPos.value = { x: e.clientX, y: e.clientY, time: menuPos.value.time || 0 }
+  menuPos.value = { x: e.clientX, y: window.innerHeight * 0.85, time: menuPos.value.time || 0 }
   openWaveMenu.value.click()
 }
 const handleTimeUpdate = () => {
+  if (ws.value) {
+    ws.value.setTime(time.value)
+  }
   const container = document.getElementById('waveform-container')
   const currentContainerWidth = ws.value.renderer.container.getBoundingClientRect().width
   const maxWidth = Math.max(
@@ -135,18 +184,21 @@ const handleTimeUpdate = () => {
     left: scrollPos,
   })
 }
-const initWaveSurfer = () => {
+
+const initWaveSurfer = async () => {
   if (ws.value) {
     ws.value.destroy()
   }
+  const wavFilename = await loadWav(props.videoName)
+  const startTime = new Date()
   ws.value = WaveSurfer.create({
+    url: wavFilename,
     container: waveform.value,
     waveColor: 'aqua',
     progressColor: 'aqua',
     cursorColor: 'red',
-    fillParent: true,
+    hideScrollbar: true,
     barAlign: 'bottom',
-    media: videoElement.value,
     plugins: [
       Hover.create({
         lineColor: '#ff0000',
@@ -179,14 +231,17 @@ const initWaveSurfer = () => {
   })
   ws.value.on('decode', () => {
     if (decoded.value) return
-    updateRegionsFromSubtitles()
     decoded.value = true
   })
-  ws.value.on('ready', () => {
+  ws.value.on('ready', async () => {
     loading.value = false
+    addOffset()
+    updateRegionsFromSubtitles()
     ws.value.setOptions({ height: props.wsStartPos })
     ws.value.zoom(props.zoomLevel)
-    addOffset()
+    const endTime = new Date()
+    const loadDuration = endTime - startTime // Calculate the load duration
+    console.log(`Wavesurfer is ready. Loading took ${loadDuration} milliseconds.`)
   })
   ws.value.on('click', progress => {
     // console.log('Set menu time', progress * ws.value.getDuration())
@@ -208,7 +263,7 @@ const extractRegions = (audioData, duration) => {
   const silentRegions = []
 
   // Trim audio data to start from the end of last subtitle region
-  const lastSubtitle = subtitles.value[subtitles.value.length - 1]
+  const lastSubtitle = props.videoSubtitles[props.videoSubtitles.length - 1]
   const lastSubtitleEnd = (lastSubtitle ? lastSubtitle.end : 0) / 1000
   const startIndex = Math.floor(lastSubtitleEnd / scale)
 
@@ -270,33 +325,25 @@ const drawRegions = () => {
   if (decodedData) {
     const regions = extractRegions(decodedData.getChannelData(0), ws.value.getDuration())
 
-    // Add regions to the waveform
+    const newSubtitles = []
     regions.forEach((region, index) => {
-      // addRegion(region.start, region.end, index.toString())
-      subtitles.value.push({
+      newSubtitles.push({
         id: index,
         start: region.start * 1000,
         end: region.end * 1000,
         text: index.toString(),
       })
     })
-    emit('update-subtitles', subtitles.value)
+    emit('update-subtitles', newSubtitles)
   }
 }
 
-const getRegionAudio = region => {
-  const decodedData = ws.value.getDecodedData()
-  const start = Math.floor(region.start * decodedData.sampleRate)
-  const end = Math.floor(region.end * decodedData.sampleRate)
-  return decodedData.getChannelData(0).slice(start, end)
-}
 const getAudioData = () => {
   const decodedData = ws.value.getDecodedData()
   return { audio: decodedData.getChannelData(0), sampleRate: decodedData.sampleRate }
 }
 
 const addOffset = () => {
-  console.log('Adding offset', props.offset)
   if (!ws.value) return
   const { audio } = getAudioData()
   const waveDiv = waveform.value?.children[0] || {}
@@ -308,17 +355,17 @@ const addOffset = () => {
   const offsetWidth = (totalWidth / audio.length) * props.offset
   waveDiv.shadowRoot.querySelector('.wrapper').style.marginLeft = `${offsetWidth}px`
 }
-const reload = () => {
+const reload = async () => {
   if (ws.value) {
     waveform.value.removeEventListener('click', handleOpenWaveMenu)
     ws.value.destroy()
     ws.value = null
   }
-  initWaveSurfer()
+  await initWaveSurfer()
 }
 
 const handleDeleteSubtitle = () => {
-  const subtitleToDelete = subtitles.value.find(sub => sub.id === currentRegion.value.subId)
+  const subtitleToDelete = props.videoSubtitles.find(sub => sub.id === currentRegion.value.subId)
   emit('delete-subtitle', subtitleToDelete)
 }
 
@@ -331,19 +378,25 @@ const handleAddSubtitle = () => {
     }
   })
   if (!regionRef || !regionRef.subId) {
-    emit('add-subtitle', null)
+    emit('add-subtitle', {
+      after: null,
+      afterIndex: -1,
+    })
   }
-  const subtitle = subtitles.value.find(sub => sub.id === regionRef.subId)
-  emit('add-subtitle', subtitle)
+  const subtitle = props.videoSubtitles.find(sub => sub.id === regionRef.subId)
+  emit('add-subtitle', {
+    after: subtitle,
+    afterIndex: props.videoSubtitles.indexOf(subtitle),
+  })
 }
 
 const handleSetTimeToSubtitle = () => {
-  const subtitle = subtitles.value.find(sub => sub.id === currentRegion.value.subId)
+  const subtitle = props.videoSubtitles.find(sub => sub.id === currentRegion.value.subId)
   emit('set-time-to', subtitle.start / 1000)
 }
 
-onMounted(() => {
-  initWaveSurfer()
+onMounted(async () => {
+  await initWaveSurfer()
 })
 
 watch(
@@ -354,41 +407,32 @@ watch(
 )
 watch(
   () => props.zoomLevel,
-  (newVal, oldVal) => {
+  debounce((newVal, oldVal) => {
     ws.value.zoom(newVal)
     // we need to call this twice due to some render bug
-    if (oldVal && newVal > oldVal) return
-    ws.value.zoom(newVal)
-  },
+    if (!(oldVal && newVal > oldVal)) {
+      ws.value.zoom(newVal)
+    }
+    addOffset()
+  }, 150),
 )
 
 watch(
   () => props.wsStartPos,
-  newVal => {
+  debounce(newVal => {
     // we need to call this twice due to some render bug
     ws.value.setOptions({ height: newVal })
     ws.value.setOptions({ height: newVal })
-  },
+  }, 150),
 )
-
-watch(
-  () => props.videoSubtitles,
-  () => {
-    subtitles.value = props.videoSubtitles
-    updateRegionsFromSubtitles()
-  },
-  { deep: true },
-)
-
 watch(
   () => props.videoName,
-  (newSource, oldSource) => {
+  async (newSource, oldSource) => {
     if (newSource !== oldSource) {
-      initWaveSurfer()
+      await initWaveSurfer()
     }
   },
 )
-
 watch(
   () => props.currentTime,
   newTime => {
@@ -396,10 +440,48 @@ watch(
     handleTimeUpdate()
   },
 )
-
-defineExpose({
-  getAudioData,
-})
+const handleSubtitleUpdates = () => {
+  const { name, target, idx } = $update.targets[$update.targets.length - 1]
+  if (idx !== props.idx) return
+  let region = null
+  if (target && target.id && target.id !== -1)
+    region = wsRegions.value.regions.find(region => region && region.subId === target.id)
+  switch (name) {
+    case 'subtitles':
+      updateRegionsFromSubtitles()
+      $update.targets = []
+      return
+    case 'subtitle-update':
+      updateRegion(target, region)
+      break
+    case 'subtitle-delete':
+      if (region) {
+        region.remove()
+        delete wsRegions.value.regions[wsRegions.value.regions.indexOf(region)]
+      }
+      break
+    case 'subtitle-add':
+      addRegion(target)
+      break
+    default:
+      break
+  }
+  $update.targets.pop()
+}
+watch(
+  () => $update.targets,
+  () => {
+    if (!$update.targets.length) return
+    if ($update.targets[$update.targets.length - 1] === 'undo-redo') {
+      updateRegionsFromSubtitles()
+      if (props.idx === Array.from(document.getElementsByClassName('waveform')).length - 1)
+        $update.targets = []
+    } else {
+      handleSubtitleUpdates()
+    }
+  },
+  { deep: true },
+)
 
 const wsButtons = [
   {
@@ -438,9 +520,10 @@ const regionButtons = [
     label: 'Align subtitle',
     condition: () => !props.offset,
     action: () => {
-      const segment = getRegionAudio(currentRegion.value)
-      const start = ws.value.getDecodedData().sampleRate * currentRegion.value.start
-      emit('align-subtitle', { segment, start })
+      const start = currentRegion.value.start
+      const duration = currentRegion.value.end - currentRegion.value.start
+      const { sampleRate } = getAudioData()
+      emit('align-subtitle', { start, duration, sampleRate })
     },
   },
   {
@@ -454,7 +537,7 @@ const regionButtons = [
 </script>
 <template>
   <div>
-    <div class="d-flex align-center justify-space-between"></div>
+    <div class="d-flex align-center justify-space-between">{{ videoName }}</div>
     <div style="width: 60vw">
       <v-progress-circular
         v-if="loading"
@@ -482,10 +565,15 @@ const regionButtons = [
         <template #default="{ methods }">
           <div
             :style="{ top: `${menuPos.y}px`, left: `${menuPos.x}px` }"
-            style="position: fixed; width: 225px; height: 210px; transform: translateY(-100%)"
+            style="
+              position: fixed;
+              width: 225px;
+              height: fit-content;
+              transform: translateY(-50%) translateX(-25%);
+            "
             class="wrapper d-flex ga-2 flex-column"
           >
-            <div style="font-size: small">{{ videoName }}</div>
+            <div style="font-size: small">{{ getFilename(videoName) }}</div>
             <button
               v-for="button in wsButtons"
               :key="button.label"
@@ -513,7 +601,12 @@ const regionButtons = [
         <template #default="{ methods }">
           <div
             :style="{ top: `${menuPos.y}px`, left: `${menuPos.x}px` }"
-            style="position: fixed; width: 225px; height: 150px; transform: translateY(-100%)"
+            style="
+              position: fixed;
+              width: 225px;
+              height: fit-content;
+              transform: translateY(-50%) translateX(-25%);
+            "
             class="wrapper d-flex ga-2 flex-column"
           >
             <div style="font-size: small">{{ currentRegion.text }}</div>

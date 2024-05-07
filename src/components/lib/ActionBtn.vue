@@ -36,33 +36,58 @@ const getIconSize = () => {
 </script>
 
 <template>
-  <MenuPopup
-    v-if="hasPopup"
-    variant="popcenter"
-    appear
-    @open="$emit('open', $event)"
-  >
-    <template #opener>
-      <slot name="opener">
-        <v-tooltip
-          v-if="tooltip"
-          location="top"
-          :text="tooltip"
-        >
-          <template v-slot:activator="{ props }">
-            <v-btn class="icon_button">
-              <v-icon
-                v-bind="props"
-                :style="{ transform: rotate ? `rotate(${rotate}deg)` : 'none' }"
-                :size="getIconSize()"
-                >{{ icon }}</v-icon
-              >
-            </v-btn>
-          </template>
-        </v-tooltip>
+  <div>
+    <MenuPopup
+      v-if="hasPopup"
+      variant="popcenter"
+      appear
+      @open="$emit('open', $event)"
+    >
+      <template #opener>
+        <slot name="opener">
+          <v-tooltip
+            v-if="tooltip"
+            location="top"
+            :text="tooltip"
+          >
+            <template v-slot:activator="{ props }">
+              <v-btn class="icon_button">
+                <v-icon
+                  v-bind="props"
+                  :style="{ transform: rotate ? `rotate(${rotate}deg)` : 'none' }"
+                  :size="getIconSize()"
+                  >{{ icon }}</v-icon
+                >
+              </v-btn>
+            </template>
+          </v-tooltip>
+          <v-btn
+            v-else
+            class="icon_button"
+          >
+            <v-icon
+              v-bind="props"
+              :style="{ transform: rotate ? `rotate(${rotate}deg)` : 'none' }"
+              :size="getIconSize()"
+              >{{ icon }}</v-icon
+            >
+          </v-btn>
+        </slot>
+      </template>
+      <template #default>
+        <slot name="popup"></slot>
+      </template>
+    </MenuPopup>
+    <v-tooltip
+      v-else-if="tooltip"
+      location="top"
+      :text="tooltip"
+    >
+      <template v-slot:activator="{ props }">
         <v-btn
-          v-else
           class="icon_button"
+          :class="`icon_button_${size}`"
+          @click="callback"
         >
           <v-icon
             v-bind="props"
@@ -71,44 +96,21 @@ const getIconSize = () => {
             >{{ icon }}</v-icon
           >
         </v-btn>
-      </slot>
-    </template>
-    <template #default>
-      <slot name="popup"></slot>
-    </template>
-  </MenuPopup>
-  <v-tooltip
-    v-else-if="tooltip"
-    location="top"
-    :text="tooltip"
-  >
-    <template v-slot:activator="{ props }">
-      <v-btn
-        class="icon_button"
-        :class="`icon_button_${size}`"
-        @click="callback"
-      >
-        <v-icon
-          v-bind="props"
-          :style="{ transform: rotate ? `rotate(${rotate}deg)` : 'none' }"
-          :size="getIconSize()"
-          >{{ icon }}</v-icon
-        >
-      </v-btn>
-    </template>
-  </v-tooltip>
-  <v-btn
-    v-else
-    class="icon_button"
-    :class="`icon_button_${size}`"
-    @click="callback"
-  >
-    <v-icon
-      :style="{ transform: rotate ? `rotate(${rotate}deg)` : 'none' }"
-      :size="getIconSize()"
-      >{{ icon }}</v-icon
+      </template>
+    </v-tooltip>
+    <v-btn
+      v-else
+      class="icon_button"
+      :class="`icon_button_${size}`"
+      @click="callback"
     >
-  </v-btn>
+      <v-icon
+        :style="{ transform: rotate ? `rotate(${rotate}deg)` : 'none' }"
+        :size="getIconSize()"
+        >{{ icon }}</v-icon
+      >
+    </v-btn>
+  </div>
 </template>
 
 <style scoped></style>

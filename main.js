@@ -5,9 +5,16 @@ const { app, BrowserWindow, ipcMain, Menu, MenuItem, dialog } = require('electro
 const { extractSrtSubtitles, loadSrtSubtitles } = require('./backend/converter.js')
 const path = require('node:path')
 const fs = require('node:fs')
-const { saveFile, getFiles, saveVariant, getVariants } = require('./backend/fileManager')
-const { crossCorrelate } = require('./backend/correlate')
-const { mergeSrtSubtitles, saveSubtitles } = require('./backend/converter')
+const {
+  saveFile,
+  getFiles,
+  saveVariant,
+  getVariants,
+  deleteVariant,
+  addTime,
+} = require('./backend/fileManager')
+const { crossCorrelate, alignSignals } = require('./backend/correlate')
+const { mergeSrtSubtitles, saveSubtitles, getWav } = require('./backend/converter')
 
 const createWindow = async () => {
   // Create the browser window.
@@ -66,25 +73,28 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
 
-ipcMain.handle('open-file-dialog', () => {
+ipcMain.handle('open-file-dialog', async () => {
   const window = BrowserWindow.getFocusedWindow()
 
-  dialog.showOpenDialog(
-    window,
-    {
-      properties: ['openFile'],
-      filters: [{ name: 'All Files', extensions: ['*'] }],
-    },
-    filePaths => {
-      if (filePaths) {
-        const selectedFilePath = filePaths[0]
-        return {
-          name: path.basename(selectedFilePath),
-          path: selectedFilePath,
-        }
-      }
-    },
-  )
+  console.log('Open file dialog')
+
+  // Using await to wait for the dialog to close and capture the result
+  const { canceled, filePaths } = await dialog.showOpenDialog(window, {
+    properties: ['openFile'],
+    filters: [{ name: 'All Files', extensions: ['*'] }],
+  })
+
+  if (!canceled && filePaths.length > 0) {
+    const selectedFilePath = filePaths[0]
+    console.log('Selected file: ', selectedFilePath)
+    return {
+      name: path.basename(selectedFilePath),
+      path: selectedFilePath,
+    }
+  } else {
+    // Handle the case where the dialog is canceled or no file is selected
+    return null
+  }
 })
 
 ipcMain.handle('save-file-dialog', (event, { defaultName, defaultExtensions, extensionsName }) => {
@@ -143,21 +153,29 @@ ipcMain.handle('get-files', () => {
 })
 
 ipcMain.handle('save-file', async (event, { file }) => {
-  saveFile(file)
-  return { status: 'ok' }
+  const saved = saveFile(file)
+  return { saved }
+})
+
+ipcMain.handle('open-file', (event, { path, time }) => {
+  return addTime(path, time)
 })
 
 ipcMain.handle('get-variants', (event, { file }) => {
   return getVariants(file)
 })
 
-ipcMain.handle('save-variant', (event, { file }) => {
-  saveVariant(file)
+ipcMain.handle('save-variant', (event, { file, variant }) => {
+  saveVariant(file, variant)
   return { status: 'ok' }
 })
 
+ipcMain.handle('delete-variant', (event, { file, variants }) => {
+  return deleteVariant(file, variants)
+})
+
 ipcMain.handle('save-session', (event, { session }) => {
-  fs.writeFileSync('./backend/session.json', JSON.stringify(session, null, 2))
+  fs.writeFileSync('./backend/session.json', session)
   return { status: 'ok' }
 })
 
@@ -173,6 +191,17 @@ ipcMain.handle('load-session', () => {
 
 ipcMain.handle('cross-correlate', (event, { segment, audio }) => {
   return crossCorrelate(segment, audio)
+})
+const sampleRate = 8000 // Global sample rate for the audio signal
+ipcMain.handle('get-wav', async (event, { videoFilename }) => {
+  let res = await getWav(videoFilename, sampleRate)
+  res = path.join(process.cwd(), res.toString())
+  console.log('WAV file:', res)
+  return { wavFilename: res }
+})
+
+ipcMain.handle('align-signals', async (event, { segment, audio }) => {
+  return await alignSignals({ segment, audio, sampleRate })
 })
 
 ipcMain.handle('cwd', () => {

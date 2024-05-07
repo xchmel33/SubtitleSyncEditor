@@ -1,3 +1,5 @@
+import $apiService from '@/utilities/client'
+
 export const getFilename = path => {
   if (!path) return ''
   const parts = path.split(/[/\\]/)
@@ -13,11 +15,29 @@ export const numFixed = (num, fixed) => {
 
 export const timestamp = () => {
   const date = new Date()
-  return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  const pad = num => num.toString().padStart(2, '0')
+  const datePart = `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`
+  const timePart = `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  return `${datePart} ${timePart}`
 }
 
 export const uniqueId = () => {
   return Math.random().toString(36).substr(2, 9)
+}
+
+export const sortByTimestamps = data => {
+  return data
+    .filter(a => a.time)
+    .sort((a, b) => {
+      const parseDate = timestamp => {
+        const [date, time] = timestamp.split(' ')
+        const [dd, mm, yyyy] = date.split('/').map(Number)
+        const [hh, min, ss] = time.split(':').map(Number)
+        return new Date(yyyy, mm - 1, dd, hh, min, ss)
+      }
+
+      return parseDate(b.time) - parseDate(a.time) // Sort by latest
+    })
 }
 
 export const lastItem = arr => arr[arr.length - 1]
@@ -55,10 +75,24 @@ export const localPath = async ({ service, path }) => {
   return path.replace(cwd, '.')
 }
 
-export const compareObjects = (obj1, obj2) => {
+export const stringDiff = (str1, str2) => {
+  const diffChars = []
+  str1.split('').forEach((char, index) => {
+    if (char !== str2[index]) {
+      diffChars.push(char)
+    }
+  })
+  return diffChars.join('')
+}
+
+export const compareObjects = (obj1, obj2, debug = false) => {
   obj1 = typeof obj1 === 'string' ? obj1 : JSON.stringify(obj1)
   obj2 = typeof obj2 === 'string' ? obj2 : JSON.stringify(obj2)
-  return obj1 === obj2
+  const res = obj1 === obj2
+  if (!res && debug) {
+    console.log('Objects differ in ', stringDiff(obj1, obj2))
+  }
+  return res
 }
 
 export const smartSplit = text => {
@@ -70,4 +104,16 @@ export const smartSplit = text => {
 
   const middleIndex = Math.floor(chunks.length / 2)
   return [chunks.slice(0, middleIndex).join(' '), chunks.slice(middleIndex).join(' ')]
+}
+
+export const loadWav = async videoFilename => {
+  try {
+    const { data } = await $apiService.sendMessage('get-wav', {
+      videoFilename,
+    })
+    return data?.wavFilename || ''
+  } catch (error) {
+    console.error('Error loading wav', error)
+  }
+  return ''
 }

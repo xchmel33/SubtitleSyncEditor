@@ -1,7 +1,7 @@
 import { getCurrentInstance, onMounted, ref, watch } from 'vue'
 import { cleanObject, lastItem, timestamp, uniqueId, compareObjects } from '@/utilities/helpers'
 export const sessionLoader = (keyBlacklist = [], maxUndoRedo = 20) => {
-  const { $apiService } = getCurrentInstance().appContext.config.globalProperties
+  const { $apiService, $update } = getCurrentInstance().appContext.config.globalProperties
 
   const session = ref({
     id: '',
@@ -58,7 +58,7 @@ export const sessionLoader = (keyBlacklist = [], maxUndoRedo = 20) => {
     data.history = session.value.history
     data.id = session.value.id || uniqueId()
     data.lastSaved = timestamp()
-    await $apiService.sendMessage('save-session', { session: data })
+    await $apiService.sendMessage('save-session', { session: JSON.stringify(data, null, 2) })
   }
 
   const undo = async () => {
@@ -68,6 +68,7 @@ export const sessionLoader = (keyBlacklist = [], maxUndoRedo = 20) => {
       session.value.data = JSON.parse(session.value.history.undoList.pop())
       await save()
       blockUpdate.value = false
+      $update.targets.push('undo-redo')
     }
   }
 
@@ -78,11 +79,14 @@ export const sessionLoader = (keyBlacklist = [], maxUndoRedo = 20) => {
       session.value.data = JSON.parse(session.value.history.redoList.pop())
       await save()
       blockUpdate.value = false
+      $update.targets.push('undo-redo')
     }
   }
 
   const updateHistory = async (history, isRedo = false) => {
-    await $apiService.sendMessage('console.log', { message: 'Session history update' })
+    await $apiService.sendMessage('console-log', {
+      message: `Session history update ${timestamp()}`,
+    })
     if (isRedo && !compareObjects(lastItem(session.value.history.redoList), history)) {
       session.value.history.redoList.push(JSON.stringify(history))
     } else if (!compareObjects(lastItem(session.value.history.undoList), history)) {
@@ -91,7 +95,7 @@ export const sessionLoader = (keyBlacklist = [], maxUndoRedo = 20) => {
     await save()
   }
   watch(
-    () => session.value, // Create a copy without history
+    () => session.value.data,
     async () => {
       if (blockUpdate.value) {
         return
@@ -101,7 +105,13 @@ export const sessionLoader = (keyBlacklist = [], maxUndoRedo = 20) => {
         Object.keys(lastSession.value).length &&
         !compareObjects(currentData, lastSession.value)
       ) {
+        // await session.value.data.reduce(async (x, i) => {
+        //   await $apiService.sendMessage('console-log', {
+        //     message: `Subtitles ${i}: ${x.subtitleRows.length}`,
+        //   })
+        // })
         await updateHistory(lastSession.value)
+        console.log('Session updated, new:', session.value.data, 'old:', lastSession.value)
       }
       lastSession.value = [...currentData]
       if (session.value.history.undoList.length > maxUndoRedo) {

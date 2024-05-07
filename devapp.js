@@ -7,10 +7,18 @@ const {
   saveSubtitles,
   mergeSrtSubtitles,
 } = require('./backend/converter.js')
-const { getFiles, saveFile, getVariants, saveVariant } = require('./backend/fileManager.js')
+const {
+  getFiles,
+  saveFile,
+  getVariants,
+  deleteVariant,
+  saveVariant,
+  addTime,
+} = require('./backend/fileManager.js')
 const cors = require('cors')
 const fs = require('fs')
-const { crossCorrelate } = require('./backend/correlate.js')
+const { crossCorrelate, alignSignals } = require('./backend/correlate.js')
+const { getWav } = require('./backend/converter')
 
 const app = express()
 const port = 3000
@@ -86,6 +94,17 @@ app.post('/save-variant', (req, res) => {
   res.send({ status: 'ok' })
 })
 
+app.post('/delete-variant', (req, res) => {
+  const { file, variants } = req.body
+  const next = deleteVariant(file, variants)
+  res.send({ status: 'ok', next })
+})
+
+app.post('/open-file', (req, res) => {
+  const { time, path } = req.body
+  addTime(path, time)
+  res.send({ status: 'ok' })
+})
 app.post('/open-file-dialog', (req, res) => {
   // Replace the path to your Python script as necessary
   exec('python ./backend/file_upload.py', (error, stdout, stderr) => {
@@ -123,7 +142,7 @@ app.get('/cwd', (req, res) => {
   res.send({ cwd: process.cwd() })
 })
 
-app.post('/console.log', (req, res) => {
+app.post('/console-log', (req, res) => {
   const { message } = req.body
   console.log(message)
   res.send({ status: 'ok' })
@@ -131,7 +150,7 @@ app.post('/console.log', (req, res) => {
 
 app.post('/save-session', (req, res) => {
   const { session } = req.body
-  fs.writeFileSync('./backend/session.json', JSON.stringify(session, null, 2))
+  fs.writeFileSync('./backend/session.json', session)
   res.send({ status: 'ok' })
   // console.log('Session saved')
 })
@@ -158,6 +177,18 @@ app.post('/cross-correlate', (req, res) => {
   const executionTime = endTime[0] + endTime[1] / 1e9
   console.log(`Execution time: ${executionTime}s, average: ${average} samples`)
   res.send({ bestOffset, executionTime })
+})
+
+const sampleRate = 8000
+app.post('/align-signals', async (req, res) => {
+  const { segment, audio } = req.body
+  const { offsetSeconds } = await alignSignals({ segment, audio, sampleRate })
+  res.send({ offsetSeconds })
+})
+
+app.post('/get-wav', (req, res) => {
+  const { videoFilename } = req.body
+  getWav(videoFilename, sampleRate).then(wavFilename => res.send({ wavFilename }))
 })
 
 app.listen(port, () => {

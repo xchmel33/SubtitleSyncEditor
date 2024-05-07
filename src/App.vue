@@ -1,7 +1,8 @@
 <script setup>
 import { sessionLoader } from '@/utilities/session'
-import { computed, ref, watch, getCurrentInstance, onMounted } from 'vue'
+import { computed, ref, watch, getCurrentInstance, onMounted, nextTick } from 'vue'
 import {
+  adjustSubtitleTimes,
   compareSubtitlesByText,
   compareSubtitlesByTime,
   parseSubtitles,
@@ -10,25 +11,43 @@ import ContentContainer from '@/components/ContentContainer.vue'
 import WaveContainer from '@/components/WaveContainer.vue'
 import ErrorBox from '@/components/ErrorBox.vue'
 import { addListeners, handleKeyCombination } from '@/utilities/listeners'
-import { uniqueId } from '@/utilities/helpers'
+import { timestamp, uniqueId } from '@/utilities/helpers'
 import LoaderSpinner from '@/components/LoaderSpinner.vue'
 
-const { $apiService, $error, $loading } = getCurrentInstance().appContext.config.globalProperties
+const { $apiService, $error, $loading, $update } =
+  getCurrentInstance().appContext.config.globalProperties
 
 const { session, undo, redo } = sessionLoader(['hover', 'active', 'match', 'merge', 'currentTime'])
-const hoveredSubtitles = ref([])
 const errorMessage = ref('')
-const loadingMessage = ref('')
+const loadingMessage = ref({ message: '', stuck: false })
 
 const maxSubtitles = computed(() => {
   return Math.max(...session.value.data.map(x => x?.length || 0))
 })
+
+// main subtitle updates
 const handleSubtitlesUpdate = (subtitles, idx) => {
   session.value.data[idx].subtitleRows = subtitles
+  if (subtitles.length)
+    nextTick(() => {
+      const scrollToId = `text_${session.value.data[idx].subtitleRows[0].id}`
+      document.getElementById(scrollToId)?.scrollIntoView()
+    })
+  $update.targets.push({
+    name: 'subtitles',
+    target: null,
+    idx,
+  })
+  console.log('Subtitles updated:', $update.target)
 }
 const handleSubtitleUpdate = ({ item, index }, idx) => {
   session.value.data[idx].subtitleRows[index] = item
   const offset = session.value.data[idx].offsetMs || 0
+  $update.targets.push({
+    name: 'subtitle-update',
+    target: item,
+    idx,
+  })
   if (!session.value.data[idx].sync) return
   if (item.match) {
     const { subtitleId, videoId } = item.match
@@ -36,53 +55,86 @@ const handleSubtitleUpdate = ({ item, index }, idx) => {
     matchedSubtitle.text = item.text
     matchedSubtitle.start = item.start + offset
     matchedSubtitle.end = item.end + offset
+    $update.targets.push({
+      name: 'subtitle-update',
+      target: matchedSubtitle,
+      idx: videoId,
+    })
   }
 }
-const handleHoverSubtitle = (subtitleIdx, videoIdx) => {
-  if (!session.value.data[videoIdx].sync) return
-  hoveredSubtitles.value.forEach(subtitle => (subtitle.hover = false))
-  if (session.value.data[videoIdx].subtitleRows[subtitleIdx].match) {
-    const { subtitleId, videoId } = session.value.data[videoIdx].subtitleRows[subtitleIdx].match
-    session.value.data[videoId].subtitleRows[subtitleId].hover = true
-    hoveredSubtitles.value.push(session.value.data[videoId].subtitleRows[subtitleId])
-  }
-}
-const addSubtitle = (subtitle, idx) => {
-  const subtitleToAdd = {
-    start: 0,
-    end: 1000,
-    text: 'Hello',
+const addSubtitle = ({ after, afterIndex, newSubtitle = null }, idx) => {
+  const subtitleToAdd = newSubtitle || {
+    start: (after?.end || 0) + 10,
+    end: (after?.end || 0) + 510,
+    text: 'New',
     id: uniqueId(),
   }
-  if (!subtitle) {
-    session.value.data[idx].subtitleRows.push(subtitleToAdd)
-    return
+
+  if (after === null || afterIndex === null) {
+    // situation when there are no subtitles
+    session.value.data[idx].subtitleRows.push(newSubtitle)
+  } else {
+    const nextSubtitle = session.value.data[idx].subtitleRows[afterIndex + 1]
+    session.value.data[idx].subtitleRows.splice(afterIndex + 1, 0, subtitleToAdd)
+    if (nextSubtitle && subtitleToAdd.end >= nextSubtitle.start) {
+      adjustSubtitleTimes({ subtitleToAdd, after, nextSubtitle })
+      $update.targets.push({
+        name: 'subtitle-update',
+        target: nextSubtitle,
+        idx,
+      })
+      $update.targets.push({
+        name: 'subtitle-update',
+        target: after,
+        idx,
+      })
+    }
   }
-  const index = session.value.data[idx].subtitleRows.findIndex(x => x.id === subtitle.id)
-  session.value.data[idx].subtitleRows.splice(index + 1, 0, subtitleToAdd)
+  $update.targets.push({
+    name: 'subtitle-add',
+    target: subtitleToAdd,
+    idx,
+  })
 }
 const deleteSubtitle = (subtitle, idx) => {
   const index = session.value.data[idx].subtitleRows.findIndex(x => x.id === subtitle.id)
   session.value.data[idx].subtitleRows.splice(index, 1)
-}
-const activateSubtitle = (subtitle, idx) => {
-  session.value.data.forEach(x => {
-    x.subtitleRows.forEach(y => (y.active = false))
+  $update.targets.push({
+    name: 'subtitle-delete',
+    target: subtitle,
+    idx,
   })
-  subtitle.active = true
-  if (session.value.data[idx].sync && subtitle.match) {
-    const { subtitleId, videoId } = subtitle.match
-    session.value.data[videoId].subtitleRows[subtitleId].active = true
+}
+const extractSubtitles = async index => {
+  try {
+    const { data } = await $apiService.sendMessage('extract-subtitles', {
+      file: session.value.data[index].videoFile,
+    })
+    if (data && !data.error) {
+      session.value.data[index].subtitleRows = parseSubtitles(data)
+      $update.targets.push({
+        name: 'subtitles',
+        target: null,
+        idx: index,
+      })
+    } else {
+      errorMessage.value = data.error
+    }
+  } catch (error) {
+    errorMessage.value = error?.response?.data?.error || ''
   }
 }
 
-const isTimeAligned = index => {
-  const x = session.value.data[index]
-  return x?.offset && x.offset !== 0
-}
+// other handlers
 const matchSubtitles = index => {
+  const isTimeAligned = index => {
+    const x = session.value.data[index]
+    return x?.offset && x.offset !== 0
+  }
+
   if (session.value.data[index].sync) {
     session.value.data[index].sync = false
+    session.value.data.forEach(x => (x.active = null))
     return
   }
   const toMatchIndex = index === session.value.data.length - 1 ? index - 1 : index + 1
@@ -104,20 +156,6 @@ const matchSubtitles = index => {
   }
   if (match) session.value.data[index].sync = true
 }
-const extractSubtitles = async index => {
-  try {
-    const { data } = await $apiService.sendMessage('extract-subtitles', {
-      file: session.value.data[index].videoFile,
-    })
-    if (data && !data.error) {
-      session.value.data[index].subtitleRows = parseSubtitles(data)
-    } else {
-      errorMessage.value = data.error
-    }
-  } catch (error) {
-    errorMessage.value = error?.response?.data?.error || ''
-  }
-}
 const addVideoFile = async (e, i) => {
   session.value.data[i].videoFile = e.localPath || e.path || e
 }
@@ -130,6 +168,17 @@ const handleSetTimeTo = (time, idx) => {
   const videoElement = document.getElementById(`video_player_${session.value.data[idx].videoFile}`)
   if (videoElement) {
     videoElement.currentTime = time
+  }
+}
+const handleActiveSubtitle = (subtitle, idx) => {
+  if (!session.value.data[idx].sync) return
+  session.value.data[idx].active = subtitle
+  if (subtitle.match) {
+    const { subtitleId, videoId } = subtitle.match
+    session.value.data[videoId].active = session.value.data[videoId].subtitleRows[subtitleId]
+  } else {
+    const videoId = idx === session.value.data.length - 1 ? idx - 1 : idx + 1
+    session.value.data[videoId].active = null
   }
 }
 watch(errorMessage, value => {
@@ -145,11 +194,15 @@ watch($error, value => {
     errorMessage.value = value.message
   }
 })
-watch($loading, value => {
-  if (value) {
-    loadingMessage.value = value.message
-  }
-})
+watch(
+  $loading,
+  value => {
+    if (value) {
+      loadingMessage.value = value
+    }
+  },
+  { immediate: true },
+)
 onMounted(() => {
   addListeners([
     {
@@ -180,11 +233,10 @@ onMounted(() => {
       @update:subtitle="handleSubtitleUpdate($event, idx)"
       @update:time="session.data[idx].currentTime = $event"
       @extract-subtitles="() => extractSubtitles(idx)"
-      @hover-subtitle="handleHoverSubtitle($event, idx)"
       @match-subtitles="() => matchSubtitles(idx)"
-      @activate-subtitle="activateSubtitle($event, idx)"
       @add-subtitle="addSubtitle($event, idx)"
       @delete-subtitle="deleteSubtitle($event, idx)"
+      @activate-subtitle="handleActiveSubtitle($event, idx)"
     />
   </div>
   <WaveContainer
@@ -204,7 +256,11 @@ onMounted(() => {
     :error="errorMessage"
     @update:error="errorMessage = $event"
   />
-  <LoaderSpinner :text="loadingMessage" />
+  <LoaderSpinner
+    v-if="loadingMessage.message"
+    :text="loadingMessage.message"
+    :stuck="loadingMessage.stuck"
+  />
 </template>
 
 <style>
