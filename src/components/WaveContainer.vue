@@ -29,6 +29,7 @@ const emit = defineEmits([
   'add-subtitle',
   'delete-subtitle',
   'set-time-to',
+  'activate-subtitle',
 ])
 const zoomLevel = ref(props.zoom)
 const wsStartPos = ref(props.wsStart)
@@ -110,6 +111,7 @@ const alignSubtitle = async (index, alignmentData) => {
           @add-subtitle="$emit('add-subtitle', { idx: index, unwrap: $event })"
           @delete-subtitle="$emit('delete-subtitle', { idx: index, unwrap: $event })"
           @set-time-to="$emit('set-time-to', { idx: index, unwrap: $event })"
+          @activate-subtitle="$emit('activate-subtitle', { idx: index, unwrap: $event })"
         />
       </div>
     </div>

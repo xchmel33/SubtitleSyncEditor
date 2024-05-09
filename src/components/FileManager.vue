@@ -33,6 +33,7 @@ const updateRecentFiles = async () => {
 }
 
 const getFiles = async () => {
+  const cwd = (await $apiService.sendMessage('cwd', {}, { method: 'GET' })).data?.cwd || ''
   $apiService
     .sendMessage('get-files', {}, { method: 'GET' })
     .catch(error => {
@@ -43,14 +44,21 @@ const getFiles = async () => {
         $error.message = 'No files found'
         return
       }
+      console.log('cwd', cwd)
       recentFiles.value = sortByTimestamps(
-        data.filter(file => {
-          const isLocalFile = file.path.startsWith('videos')
-          return (
-            file.type === props.type &&
-            (isElectron.value ? !isLocalFile : isLocalFile || file.type === 'subtitles')
-          )
-        }),
+        data
+          .filter(file => {
+            // const isLocalFile = file.path.startsWith('videos')
+            return (
+              file.type === props.type && 1
+              // (isElectron.value ? !isLocalFile : isLocalFile || file.type === 'subtitles')
+            )
+          })
+          .map(x =>
+            isElectron.value || x.type === 'subtitles'
+              ? x
+              : { ...x, path: x.path.replace(cwd, '') },
+          ),
       )
     })
     .then(async () => updateRecentFiles())

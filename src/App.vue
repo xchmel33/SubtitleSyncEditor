@@ -72,7 +72,7 @@ const addSubtitle = ({ after, afterIndex, newSubtitle = null }, idx) => {
 
   if (after === null || afterIndex === null) {
     // situation when there are no subtitles
-    session.value.data[idx].subtitleRows.push(newSubtitle)
+    session.value.data[idx].subtitleRows.push(subtitleToAdd)
   } else {
     const nextSubtitle = session.value.data[idx].subtitleRows[afterIndex + 1]
     session.value.data[idx].subtitleRows.splice(afterIndex + 1, 0, subtitleToAdd)
@@ -88,6 +88,8 @@ const addSubtitle = ({ after, afterIndex, newSubtitle = null }, idx) => {
         target: after,
         idx,
       })
+    } else {
+      subtitleToAdd.end += 1500
     }
   }
   $update.targets.push({
@@ -171,8 +173,8 @@ const handleSetTimeTo = (time, idx) => {
   }
 }
 const handleActiveSubtitle = (subtitle, idx) => {
-  if (!session.value.data[idx].sync) return
   session.value.data[idx].active = subtitle
+  if (!session.value.data[idx].sync) return
   if (subtitle.match) {
     const { subtitleId, videoId } = subtitle.match
     session.value.data[videoId].active = session.value.data[videoId].subtitleRows[subtitleId]
@@ -251,6 +253,7 @@ onMounted(() => {
     @add-subtitle="addSubtitle($event.unwrap, $event.idx)"
     @delete-subtitle="deleteSubtitle($event.unwrap, $event.idx)"
     @set-time-to="handleSetTimeTo($event.unwrap, $event.idx)"
+    @activate-subtitle="handleActiveSubtitle($event.unwrap, $event.idx)"
   />
   <ErrorBox
     :error="errorMessage"
@@ -265,9 +268,10 @@ onMounted(() => {
 
 <style>
 #app {
-  padding: 0.5rem !important;
+  padding: 1rem 0 !important;
   max-width: 100vw !important;
   width: 90vw;
+  height: 100vh;
 }
 html {
   overflow-y: hidden !important;

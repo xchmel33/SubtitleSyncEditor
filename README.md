@@ -63,6 +63,20 @@ npm --version
 ```bash
 npm install
 ```
+4. install ffmpeg:
+- for linux:
+```bash
+sudo apt-get install ffmpeg
+```
+- for windows:
+```bash
+# download ffmpeg from https://ffmpeg.org/download.html
+# extract the zip file and add the bin folder to the PATH
+```
+- for mac:
+```bash
+brew install ffmpeg
+```
 
 ## Build for production
 - create vue3 build:

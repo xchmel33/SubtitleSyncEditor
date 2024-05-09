@@ -95,7 +95,7 @@ const handlePlayFromSubtitle = start => {
   >
     <div class="w-100 d-flex flex-column">
       <VideoPlayer
-        style="height: 30%"
+        style="height: 35%"
         :file="item.videoFile"
         :subtitleRows="item.subtitleRows"
         @update:file="$emit('update:videoFile', $event)"
@@ -121,7 +121,7 @@ const handlePlayFromSubtitle = start => {
       />
     </div>
     <div
-      style="position: absolute; right: 0; top: 27.5%; transform: translateX(66%); z-index: 1"
+      style="position: absolute; right: 0; top: 32.5%; transform: translateX(66%); z-index: 1"
       v-if="item.videoFile && !isLast"
     >
       <v-tooltip

@@ -79,6 +79,7 @@ app.get('/get-files', (req, res) => {
 
 app.post('/save-file', (req, res) => {
   const { file } = req.body
+  console.log('Save file:', file)
   saveFile(file)
   res.send({ status: 'ok' })
 })

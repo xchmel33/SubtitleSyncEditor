@@ -2,7 +2,7 @@
 import WaveSurfer from 'wavesurfer.js'
 import Hover from 'wavesurfer.js/dist/plugins/hover.js'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.js'
-import { onMounted, ref, watch, getCurrentInstance, nextTick } from 'vue'
+import { onMounted, ref, watch, getCurrentInstance, computed } from 'vue'
 import MenuPopup from '@/components/lib/MenuPopup.vue'
 import { getFilename, loadWav } from '@/utilities/helpers'
 import { debounce } from 'lodash'
@@ -69,6 +69,7 @@ const addRegion = subtitle => {
     start: subtitle.start / 1000,
     end: subtitle.end / 1000,
     loop: false,
+    // color: subtitle.match ? 'hsla(200, 100%, 30%, 0.5)' : 'hsla(300, 100%, 30%, 0.5)',
     color: 'hsla(300, 100%, 30%, 0.5)',
     drag: true,
     resize: true,
@@ -228,6 +229,11 @@ const initWaveSurfer = async () => {
       subId: region.subId,
     }
     openRegionMenu.value.click()
+    // videoElement.value.currentTime = region.start + (region.end - region.start) / 2
+    emit('set-time-to', region.start + (region.end - region.start) / 2)
+    const active = props.videoSubtitles.find(sub => sub.id === region.subId)
+    console.log('Activate subtitle:', active)
+    emit('activate-subtitle', active)
   })
   ws.value.on('decode', () => {
     if (decoded.value) return

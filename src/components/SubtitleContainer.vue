@@ -107,7 +107,7 @@ const getActions = () => [
   {
     name: 'edit',
     tooltip: `${props.file ? 'Change' : 'Open'} file`,
-    icon: `${props.file ? 'mdi-pencil' : 'mdi-file-plus'}`,
+    icon: `${props.file ? 'mdi-pencil-plus' : 'mdi-file-plus'}`,
     method: () => {},
     hasPopup: true,
   },
