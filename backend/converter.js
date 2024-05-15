@@ -3,40 +3,10 @@ const path = require('path')
 const fs = require('fs')
 const { parseSync, stringifySync } = require('subtitle')
 
-const convertToMp3 = (callback, filePath) => {
-  const outputAudioPath = `videos/${path.basename(filePath, path.extname(filePath))}.wav`
-
-  if (fs.existsSync(outputAudioPath)) {
-    console.log('Audio already extracted')
-    loadFromFile(callback, outputAudioPath)
-    return
+const extractSubtitles = inputFilePath => {
+  if (!fs.existsSync(inputFilePath)) {
+    inputFilePath = `.${inputFilePath}`
   }
-
-  ffmpeg(filePath)
-    .audioCodec('pcm_s16le')
-    .format('wav')
-    .on('end', () => {
-      // Read the output file
-      fs.readFile(outputAudioPath, (err, data) => {
-        if (err) {
-          console.error('Error reading the file:', err)
-          callback([])
-          return
-        }
-
-        // Convert the Buffer to an array (or you can send the Buffer directly)
-        const audioArray = Array.prototype.slice.call(data)
-        callback(audioArray)
-      })
-    })
-    .on('error', err => {
-      console.error('Error:', err)
-      callback([])
-    })
-    .save(outputAudioPath)
-}
-
-const extractSrtSubtitles = inputFilePath => {
   return new Promise((resolve, reject) => {
     inputFilePath = inputFilePath
       .replace(/\\/g, '/')
@@ -80,7 +50,7 @@ const extractSrtSubtitles = inputFilePath => {
   })
 }
 
-const loadSrtSubtitles = subtitles => {
+const loadSubtitles = subtitles => {
   return parseSync(subtitles)
 }
 
@@ -91,7 +61,10 @@ const saveSubtitles = (subtitles, outputFilePath, preview = false) => {
   fs.writeFileSync(outputFilePath, srtString)
 }
 
-const mergeSrtSubtitles = (inputFilePath, subtitles, outputFilePath) => {
+const mergeSubtitles = (inputFilePath, subtitles, outputFilePath) => {
+  if (!fs.existsSync(inputFilePath)) {
+    inputFilePath = `.${inputFilePath}`
+  }
   return new Promise((resolve, reject) => {
     ffmpeg(inputFilePath)
       .input(subtitles)
@@ -108,21 +81,14 @@ const mergeSrtSubtitles = (inputFilePath, subtitles, outputFilePath) => {
   })
 }
 
-const loadFromFile = (callback, filePath) => {
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      console.error('Error reading the file:', err)
-      callback([])
-      return
-    }
-
-    // Convert the Buffer to an array (or you can send the Buffer directly)
-    const audioArray = Array.prototype.slice.call(data)
-    callback(audioArray)
-  })
-}
-
 const convertToWave = (videoFilePath, wavFilePath, sampleRate) => {
+  if (!fs.existsSync(videoFilePath)) {
+    videoFilePath = `.${videoFilePath}`
+  }
+  if (!fs.existsSync(videoFilePath)) {
+    console.error('The input file does not exist:', videoFilePath)
+    return
+  }
   return new Promise((resolve, reject) => {
     ffmpeg(videoFilePath)
       .audioCodec('pcm_s16le') // Set the audio codec
@@ -170,11 +136,9 @@ const getWav = async (videoFilename, sampleRate) => {
 }
 
 module.exports = {
-  loadFromFile,
-  convertToMp3,
-  extractSrtSubtitles,
-  mergeSrtSubtitles,
-  loadSrtSubtitles,
+  extractSubtitles,
+  mergeSubtitles,
+  loadSubtitles,
   saveSubtitles,
   getWav,
 }

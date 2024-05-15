@@ -2,10 +2,10 @@ const express = require('express')
 const { exec } = require('child_process')
 const path = require('path')
 const {
-  extractSrtSubtitles,
-  loadSrtSubtitles,
+  extractSubtitles,
+  loadSubtitles,
   saveSubtitles,
-  mergeSrtSubtitles,
+  mergeSubtitles,
 } = require('./backend/converter.js')
 const {
   getFiles,
@@ -17,7 +17,7 @@ const {
 } = require('./backend/fileManager.js')
 const cors = require('cors')
 const fs = require('fs')
-const { crossCorrelate, alignSignals } = require('./backend/correlate.js')
+const { crossCorrelate, alignSubtitles } = require('./backend/correlate.js')
 const { getWav } = require('./backend/converter')
 
 const app = express()
@@ -32,7 +32,7 @@ app.use(
 
 app.post('/extract-subtitles', (req, res) => {
   const { file } = req.body
-  extractSrtSubtitles(file)
+  extractSubtitles(file)
     .then(data => res.send(data))
     .catch(error => res.status(500).json({ error: error.message }))
 })
@@ -43,7 +43,7 @@ app.post('/preview-subtitles', (req, res) => {
 })
 app.post('/embed-subtitles', (req, res) => {
   const { inputFilePath, subtitles, outputFilePath } = req.body
-  mergeSrtSubtitles(inputFilePath, subtitles, outputFilePath)
+  mergeSubtitles(inputFilePath, subtitles, outputFilePath)
     .then(() => res.send({ status: 'ok' }))
     .then(() => {
       fs.rmSync(subtitles)
@@ -63,7 +63,7 @@ app.post('/load-subtitles', (req, res) => {
     }
   }
   if (isPath) filename = fs.readFileSync(filename).toString()
-  const data = loadSrtSubtitles(filename)
+  const data = loadSubtitles(filename)
   res.send(data)
 })
 
@@ -182,14 +182,26 @@ app.post('/cross-correlate', (req, res) => {
 
 const sampleRate = 8000
 app.post('/align-signals', async (req, res) => {
-  const { segment, audio } = req.body
-  const { offsetSeconds } = await alignSignals({ segment, audio, sampleRate })
+  const { segment, audio, segmentIndex, audioIndex } = req.body
+  const { offsetSeconds } = await alignSubtitles({
+    segment,
+    audio,
+    sampleRate,
+    segmentIndex,
+    audioIndex,
+  })
   res.send({ offsetSeconds })
 })
 
 app.post('/get-wav', (req, res) => {
   const { videoFilename } = req.body
-  getWav(videoFilename, sampleRate).then(wavFilename => res.send({ wavFilename }))
+  const startTime = process.hrtime() // Start timing
+  getWav(videoFilename, sampleRate).then(wavFilename => {
+    res.send({ wavFilename })
+    const endTime = process.hrtime(startTime) // End timing
+    const executionTime = endTime[0] + endTime[1] / 1e9
+    console.log(`Converted ${videoFilename} to Wav in: ${executionTime}s`)
+  })
 })
 
 app.listen(port, () => {

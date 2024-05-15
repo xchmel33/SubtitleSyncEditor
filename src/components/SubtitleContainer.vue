@@ -20,6 +20,7 @@ const props = defineProps({
   file: { String, default: '' },
   rows: { Number, default: 0 },
   activeSubtitle: { Object, default: () => null },
+  testPrefix: { String, default: '' },
 })
 
 const hovered = ref(false)
@@ -115,7 +116,7 @@ const getActions = () => [
     name: 'close',
     tooltip: 'Close file',
     icon: 'mdi-close',
-    condition: props.file,
+    condition: props.file || props.subtitles.length > 0,
     method: closeSubtitles,
     hasPopup: false,
   },
@@ -129,11 +130,13 @@ onMounted(() => {
 </script>
 <template>
   <div
+    :data-test="testPrefix"
     class="table_wrapper position-relative"
     @mouseover="hovered = true"
     @mouseleave="hovered = false"
   >
     <ActionMenu
+      :testPrefix="testPrefix"
       style="padding: 0.5rem 0.25rem"
       :options="getActions().filter(action => action.condition === undefined || action.condition)"
       :active="hovered || menuOpen"
@@ -163,6 +166,7 @@ onMounted(() => {
       </template>
     </ActionMenu>
     <SubtitleTable
+      :test-prefix="testPrefix"
       :subtitles="subtitleRows"
       :activeSubtitleProp="props.activeSubtitle"
       @activate-subtitle="$emit('activate-subtitle', $event)"

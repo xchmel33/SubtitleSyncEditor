@@ -11,13 +11,19 @@ import ContentContainer from '@/components/ContentContainer.vue'
 import WaveContainer from '@/components/WaveContainer.vue'
 import ErrorBox from '@/components/ErrorBox.vue'
 import { addListeners, handleKeyCombination } from '@/utilities/listeners'
-import { timestamp, uniqueId } from '@/utilities/helpers'
+import { uniqueId } from '@/utilities/helpers'
 import LoaderSpinner from '@/components/LoaderSpinner.vue'
 
 const { $apiService, $error, $loading, $update } =
   getCurrentInstance().appContext.config.globalProperties
 
-const { session, undo, redo } = sessionLoader(['hover', 'active', 'match', 'merge', 'currentTime'])
+const { session, undo, redo, load } = sessionLoader([
+  'hover',
+  'active',
+  'match',
+  'merge',
+  'currentTime',
+])
 const errorMessage = ref('')
 const loadingMessage = ref({ message: '', stuck: false })
 
@@ -157,6 +163,7 @@ const matchSubtitles = index => {
     })
   }
   if (match) session.value.data[index].sync = true
+  console.log('Matched: ', session.value.data)
 }
 const addVideoFile = async (e, i) => {
   session.value.data[i].videoFile = e.localPath || e.path || e
@@ -164,6 +171,17 @@ const addVideoFile = async (e, i) => {
 const handleAlignmentUpdate = ({ index, offset, offsetMs }) => {
   session.value.data[index].offset = offset
   session.value.data[index].offsetMs = offsetMs
+  session.value.data.forEach(x => {
+    x.sync = offset !== 0
+    x.subtitleRows.forEach(y => (y.aligned = offset !== 0))
+  })
+  session.value.data.forEach((x, idx) => {
+    $update.targets.push({
+      name: 'subtitles',
+      target: { sync: offset !== 0 },
+      idx,
+    })
+  })
 }
 const handleSetTimeTo = (time, idx) => {
   console.log('Set time to', time)
@@ -217,6 +235,15 @@ onMounted(() => {
     },
   ])
 })
+// const handleAlignSubtitleTimes = () => {
+//   if (session.value.data.length !== 2) return
+//   alignSubtitleTimes(session.value.data)
+//   $update.targets.push({
+//     name: 'subtitles',
+//     target: null,
+//     idx: 0,
+//   })
+// }
 </script>
 
 <template>
@@ -229,6 +256,7 @@ onMounted(() => {
       :item="item"
       :maxSubtitles="maxSubtitles"
       :is-last="idx === session.data.length - 1"
+      :index="idx"
       @update:videoFile="e => addVideoFile(e, idx)"
       @update:subtitleFile="session.data[idx].subtitleFile = $event"
       @update:subtitles="handleSubtitlesUpdate($event, idx)"
@@ -254,12 +282,15 @@ onMounted(() => {
     @delete-subtitle="deleteSubtitle($event.unwrap, $event.idx)"
     @set-time-to="handleSetTimeTo($event.unwrap, $event.idx)"
     @activate-subtitle="handleActiveSubtitle($event.unwrap, $event.idx)"
+    @reload-session="async () => await load()"
   />
   <ErrorBox
+    data-test="error_box"
     :error="errorMessage"
     @update:error="errorMessage = $event"
   />
   <LoaderSpinner
+    data-test="loader_spinner"
     v-if="loadingMessage.message"
     :text="loadingMessage.message"
     :stuck="loadingMessage.stuck"

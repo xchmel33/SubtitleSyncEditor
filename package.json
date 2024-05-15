@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "electron": "electron .",
     "start": "npm run devapp & npm run electron",
-    "test": "node test.js"
+    "test": "playwright test --workers=1"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.6.3",
@@ -35,6 +35,8 @@
     "wavesurfer.js": "^7.7.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.12.12",
     "@vitejs/plugin-vue": "^4.5.2",
     "electron": "^28.2.0",
     "eslint": "^8.56.0",
@@ -43,6 +45,7 @@
     "sass-loader": "^14.1.0",
     "stylelint": "^16.2.1",
     "stylelint-config-standard-scss": "^13.0.0",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vite-plugin-vue-devtools": "^7.1.3"
   }
 }

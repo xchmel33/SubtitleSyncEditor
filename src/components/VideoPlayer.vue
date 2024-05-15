@@ -11,6 +11,7 @@ const emits = defineEmits(['update:time', 'update:file', 'embed:subtitles', 'upd
 const props = defineProps({
   file: String,
   subtitleRows: Object,
+  testPrefix: String,
 })
 
 const time = ref(0)
@@ -90,12 +91,14 @@ const handlePlay = () => {
 </script>
 <template>
   <div
+    :data-test="testPrefix"
     class="wrapper mb-4 d-flex ga-4"
     style="padding: 0 !important"
     @mouseover="hovered = true"
     @mouseleave="hovered = false"
   >
     <ActionMenu
+      :testPrefix="testPrefix"
       :options="getActions().filter(x => x.condition === undefined || x.condition)"
       :active="hovered || menuOpen"
       style="z-index: 99"
@@ -118,10 +121,21 @@ const handlePlay = () => {
         />
       </template>
     </ActionMenu>
-    <div class="d-flex position-relative">
+    <div
+      class="d-flex position-relative"
+      :style="!file ? 'border: 1px solid white; border-radius: 20px; width: 90%' : ''"
+    >
+      <div
+        v-if="!file"
+        class="ma-auto"
+      >
+        Opened video will show here
+      </div>
       <video
+        v-else
         ref="videoPlayer"
         :id="`video_player_${file}`"
+        data-test="player"
         height="100%"
         style="border-radius: 20px"
         :src="file"

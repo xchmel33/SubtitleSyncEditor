@@ -10,6 +10,7 @@ const props = defineProps({
     default: () => [],
   },
   activeSubtitleProp: { Object, default: () => null },
+  testPrefix: String,
 })
 const emit = defineEmits([
   'add-subtitle',
@@ -22,6 +23,7 @@ const emit = defineEmits([
 const subtitleTable = ref(null)
 const mergingSubtitles = ref(false)
 const headers = reactive([
+  { title: 'Aligned', value: 'aligned', align: 'center', width: '3rem' },
   { title: 'Duration', value: 'duration', align: 'center', width: '4rem' },
   { title: 'CPS', value: 'cps', align: 'center', width: '4rem' },
   { title: 'Subtitle text', value: 'text', align: 'center', width: '25rem' },
@@ -162,7 +164,9 @@ const createConversation = () => {
   activeSubtitle.value.text = `- ${split[0]}\n- ${split[1]}`
 }
 const handleMultipleKeyCombinations = e => {
+  console.log('handleMultipleKeyCombinations', e)
   if (document.activeElement.tagName === 'INPUT' && e.key.length === 1) return
+  if (!subtitleTable.value.contains(e.target)) return
   const keyConfigurations = [
     { targetKey: 'ArrowDown', callback: () => activateSubtitleSibling(e, 1) },
     { targetKey: 'ArrowUp', callback: () => activateSubtitleSibling(e, -1) },
@@ -215,7 +219,7 @@ watch(
     class="table d-flex flex-column no-focus-outline"
     style="padding: 2.5rem 0 1rem 0"
     tabindex="0"
-    @keydown="handleMultipleKeyCombinations"
+    @keydown.stop="handleMultipleKeyCombinations"
   >
     <div class="table_row table_row_header d-flex w-100 ga-1 mt-2">
       <div
@@ -236,8 +240,9 @@ watch(
           table_row_merge: item.merge,
           table_row_hover: !activeSubtitle,
         }"
-        v-for="(item, idx) in subtitles"
+        v-for="(item, idx) in subtitles.sort((a, b) => a.start - b.start)"
         :key="item.id"
+        :data-test="`${testPrefix}_subtitle_row_${idx}`"
         @click="activateSubtitle(idx)"
         @mouseover="
           () => {
@@ -251,8 +256,17 @@ watch(
           class="table_cell"
           :style="{ width: header.width }"
         >
+          <v-icon
+            v-if="header.value === 'aligned'"
+            :color="item.aligned ? 'green' : 'red'"
+            :icon="item.aligned ? 'mdi-check' : 'mdi-close'"
+            :data-test="item.aligned ? `aligned_${idx}` : `not_aligned_${idx}`"
+            class="my-auto"
+            :style="{ width: header.width }"
+          >
+          </v-icon>
           <span
-            v-if="header.value === 'cps'"
+            v-else-if="header.value === 'cps'"
             :style="{ color: colorizeCPS(item) }"
           >
             {{ calculateCPS(item) }}
@@ -264,6 +278,7 @@ watch(
             style="width: 4rem"
           >
             <ActionBtn
+              data-test="split_subtitle"
               size="small"
               icon="mdi-arrow-split-horizontal"
               class="my-auto"
@@ -286,6 +301,7 @@ watch(
               @click="addSubtitleAfterActive"
             />
             <ActionBtn
+              data-test="delete_subtitle"
               size="small"
               icon="mdi-delete"
               class="my-auto"
@@ -295,6 +311,7 @@ watch(
           </div>
           <input
             v-else
+            :data-test="header.title === 'Subtitle text' ? `subtitle_input_${idx}` : ''"
             :id="`text_${item.id}`"
             :style="{
               flexGrow: header.title === 'Subtitle text' ? 1 : 0,
@@ -349,6 +366,9 @@ input:focus {
 .table_row_hover:hover {
   background-color: rgba(var(--clr-primary-rgb), 0.2);
   --clr-cell: var(--clr-white) !important;
+}
+.table_row_aligned {
+  background-color: red !important;
 }
 .ps {
   height: calc(70vh * 0.5);

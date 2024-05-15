@@ -2,7 +2,7 @@
 
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain, Menu, MenuItem, dialog } = require('electron')
-const { extractSrtSubtitles, loadSrtSubtitles } = require('./backend/converter.js')
+const { extractSubtitles, loadSubtitles } = require('./backend/converter.js')
 const path = require('node:path')
 const fs = require('node:fs')
 const {
@@ -14,7 +14,7 @@ const {
   addTime,
 } = require('./backend/fileManager')
 const { crossCorrelate, alignSignals } = require('./backend/correlate')
-const { mergeSrtSubtitles, saveSubtitles, getWav } = require('./backend/converter')
+const { mergeSubtitles, saveSubtitles, getWav } = require('./backend/converter')
 
 const createWindow = async () => {
   // Create the browser window.
@@ -119,14 +119,14 @@ ipcMain.handle('save-file-dialog', (event, { defaultName, defaultExtensions, ext
 })
 ipcMain.handle('extract-subtitles', async (event, { file }) => {
   try {
-    return await extractSrtSubtitles(file)
+    return await extractSubtitles(file)
   } catch (error) {
     return { error: error.message }
   }
 })
 
 ipcMain.handle('embed-subtitles', async (event, { inputFilePath, subtitles, outputFilePath }) => {
-  await mergeSrtSubtitles(inputFilePath, subtitles, outputFilePath)
+  await mergeSubtitles(inputFilePath, subtitles, outputFilePath)
   fs.rmSync(subtitles)
   console.log(`Subtitles merged,\ntemp file ${subtitles} removed`)
   return { status: 'ok' }
@@ -145,7 +145,7 @@ ipcMain.handle('load-subtitles', (event, { filename, isPath }) => {
     }
     filename = fs.readFileSync(filename).toString()
   }
-  return loadSrtSubtitles(filename)
+  return loadSubtitles(filename)
 })
 
 ipcMain.handle('get-files', () => {

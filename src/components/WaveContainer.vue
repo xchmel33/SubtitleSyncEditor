@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, getCurrentInstance, nextTick } from 'vue'
+import { getCurrentInstance, nextTick, ref, watch } from 'vue'
 import WaveForm from '@/components/WaveForm.vue'
 import { loadWav } from '@/utilities/helpers'
 
@@ -30,10 +30,12 @@ const emit = defineEmits([
   'delete-subtitle',
   'set-time-to',
   'activate-subtitle',
+  'reload-session',
 ])
 const zoomLevel = ref(props.zoom)
 const wsStartPos = ref(props.wsStart)
 const loading = ref(false)
+const waveformsRef = ref([])
 
 watch(zoomLevel, () => {
   emit('update:zoom', zoomLevel.value)
@@ -51,8 +53,7 @@ const alignSubtitle = async (index, alignmentData) => {
   })
   await nextTick().then(async () => {
     try {
-      const { start, duration, sampleRate } = alignmentData
-      console.log('alignmentData', start, duration, sampleRate)
+      const { start, duration } = alignmentData
       const segmentFile = await loadWav(props.waveforms[index].videoFile)
       const audioIndex = index + 1 < props.waveforms.length ? index + 1 : index - 1
       const audioFile = await loadWav(props.waveforms[audioIndex].videoFile)
@@ -63,17 +64,16 @@ const alignSubtitle = async (index, alignmentData) => {
           duration,
         },
         audio: audioFile,
+        segmentIndex: index,
+        audioIndex,
       })
       const { offsetSeconds } = data
-      console.log('offsetSeconds', offsetSeconds, start, sampleRate)
-      const offset = (offsetSeconds - start) * sampleRate
-      const offsetMs = offsetSeconds * 1000
-      console.log('offset', offset, offsetMs)
-      if (offset < 0) {
-        emit('update:offset', { index: audioIndex, offset: -offset, offsetMs: -offsetMs })
-      } else {
-        emit('update:offset', { index, offset, offsetMs })
-      }
+      emit('update:offset', {
+        index,
+        offset: offsetSeconds,
+        offsetMs: offsetSeconds * 1000,
+      })
+      emit('reload-session')
     } catch (error) {
       $error.message = error.message
     }
@@ -82,13 +82,17 @@ const alignSubtitle = async (index, alignmentData) => {
     loading.value = false
   })
 }
+
+const isSynced = () => {
+  return props.waveforms.some(x => x.sync)
+}
 </script>
 
 <template>
-  <div class="d-flex ga-8">
+  <div class="d-flex ga-8 mt-2">
     <div
       style="overflow-x: auto"
-      class="d-flex flex-column ga-4 flex-1-1"
+      class="d-flex flex-column ga-2 flex-1-1"
       id="waveform-container"
     >
       <div
@@ -96,6 +100,7 @@ const alignSubtitle = async (index, alignmentData) => {
         :key="item.id"
       >
         <WaveForm
+          :ref="el => waveformsRef.push(el)"
           v-if="item.videoFile"
           :idx="index"
           :currentTime="item.currentTime || 0"
@@ -104,6 +109,8 @@ const alignSubtitle = async (index, alignmentData) => {
           :zoom-level="zoomLevel"
           :ws-start-pos="wsStartPos"
           :offset="item.offset"
+          :offsetMs="item.offsetMs"
+          :sync="isSynced()"
           @alignSubtitle="alignSubtitle(index, $event)"
           @clearOffset="() => emit('update:offset', { index, offset: 0, offsetMs: 0 })"
           @update-subtitle="$emit('update:subtitle', { idx: index, unwrap: $event })"
@@ -119,6 +126,7 @@ const alignSubtitle = async (index, alignmentData) => {
       <div class="d-flex align-center mb-5 flex-column">
         <label for="time-zoom">Time zoom</label>
         <input
+          data-test="time-zoom"
           type="range"
           id="time-zoom"
           min="10"

@@ -16,6 +16,7 @@ backend/session.json
 videos
 node_modules
 dist
+tests/data
 
 # Editor directories and files
 .vscode/*
@@ -28,3 +29,7 @@ dist
 *.sln
 *.sw?
 package-lock.json
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

@@ -19,6 +19,10 @@ const props = defineProps({
       sync: false,
     }),
   },
+  index: {
+    type: Number,
+    default: 0,
+  },
   maxSubtitles: {
     type: Number,
     default: 0,
@@ -47,11 +51,16 @@ const emit = defineEmits([
 
 const embedSubtitlesToVideo = async () => {
   try {
-    const { data } = await $apiService.sendMessage('save-file-dialog', {
-      defaultName: getFilename(props.item.videoFile),
-      defaultExtensions: [props.item.videoFile.split('.').pop()],
-    })
-    const { filePath } = data
+    let filePath = ''
+    if (!window.location.href.includes('test')) {
+      const { data } = await $apiService.sendMessage('save-file-dialog', {
+        defaultName: getFilename(props.item.videoFile),
+        defaultExtensions: [props.item.videoFile.split('.').pop()],
+      })
+      filePath = data.filePath
+    } else {
+      filePath = `./tests/data/${getFilename(props.item.videoFile)}`
+    }
     const tmpSubtitleFile = `${filePath}_tmp.srt`
     if (!filePath) return
     await $apiService.sendMessage('save-subtitles', {
@@ -98,6 +107,7 @@ const handlePlayFromSubtitle = start => {
         style="height: 35%"
         :file="item.videoFile"
         :subtitleRows="item.subtitleRows"
+        :testPrefix="`video_player_${index}`"
         @update:file="$emit('update:videoFile', $event)"
         @update:time="$emit('update:time', $event)"
         @embed:subtitles="embedSubtitlesToVideo"
@@ -109,6 +119,7 @@ const handlePlayFromSubtitle = start => {
         :has-video="!!item.videoFile"
         :file="item.subtitleFile"
         :activeSubtitle="item.active"
+        :testPrefix="`subtitle_container_${index}`"
         @update-file="$emit('update:subtitleFile', $event)"
         @update-subtitles="$emit('update:subtitles', $event)"
         @update-subtitle="$emit('update:subtitle', $event)"

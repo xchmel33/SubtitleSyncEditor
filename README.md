@@ -98,3 +98,29 @@ now go to localhost:8081 in web browser and you can use the app
 
 [Please use chrome browser, currently broken styles in firefox]
 
+
+## Setup & run tests
+1. Download folder with test videos:
+- linux:
+```bash
+chmod +x ./install/linux/test_data.sh
+./install/linux/download_test_data.sh
+```
+- mac:
+```bash
+chmod +x ./install/mac/test_data.sh
+./install/mac/test_data.sh
+```
+- windows:
+```bash
+./install/windows/test_data.ps1
+```
+2. Install browsers for playwright tests:
+```bash
+npx playwright install
+```
+3. Run tests:
+```bash
+npm run test
+```
+

@@ -126,5 +126,5 @@ export const sessionLoader = (keyBlacklist = [], maxUndoRedo = 20) => {
   onMounted(async () => {
     await load()
   })
-  return { session, undo, redo }
+  return { session, undo, redo, load }
 }

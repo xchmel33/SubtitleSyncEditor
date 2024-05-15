@@ -10,6 +10,10 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  testPrefix: {
+    type: String,
+    default: '',
+  },
 })
 </script>
 
@@ -25,6 +29,7 @@ defineProps({
     <div class="d-flex">
       <ActionBtn
         v-for="option in options"
+        :data-test="`${testPrefix}_action_${option.icon}`"
         :key="option.icon"
         :icon="option.icon"
         :callback="option.method"

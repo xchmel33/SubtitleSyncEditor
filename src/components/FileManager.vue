@@ -32,8 +32,12 @@ const updateRecentFiles = async () => {
   }
 }
 
+const getCwd = async () => {
+  return (await $apiService.sendMessage('cwd', {}, { method: 'GET' })).data?.cwd || ''
+}
+
 const getFiles = async () => {
-  const cwd = (await $apiService.sendMessage('cwd', {}, { method: 'GET' })).data?.cwd || ''
+  const cwd = await getCwd()
   $apiService
     .sendMessage('get-files', {}, { method: 'GET' })
     .catch(error => {
@@ -93,6 +97,10 @@ const fileDialog = async () => {
     $error.message = 'No file selected'
     return
   }
+  if (!isElectron.value && props.type !== 'subtitles') {
+    const cwd = await getCwd()
+    data.path = data.path.replace(cwd, '')
+  }
   await handleOpenFile(data.path)
 }
 
@@ -132,6 +140,7 @@ const handleOpenFile = async path => {
             <button
               class="text_button_small text-left d-flex justify-space-between"
               style="width: 97.5%; outline: none"
+              :data-test="`file_manager_file_${getFilename(file.path)}`"
               @click="async () => await handleOpenFile(file.path)"
             >
               <span
@@ -147,6 +156,7 @@ const handleOpenFile = async path => {
     </div>
     <div class="d-flex">
       <button
+        data-test="file_manager_open_new"
         class="text_button ml-auto mt-3 px-4"
         @click="fileDialog"
       >
