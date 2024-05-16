@@ -1,12 +1,7 @@
 <script setup>
 import { sessionLoader } from '@/utilities/session'
 import { computed, ref, watch, getCurrentInstance, onMounted, nextTick } from 'vue'
-import {
-  adjustSubtitleTimes,
-  compareSubtitlesByText,
-  compareSubtitlesByTime,
-  parseSubtitles,
-} from '@/utilities/subtitles'
+import { adjustSubtitleTimes, parseSubtitles } from '@/utilities/subtitles'
 import ContentContainer from '@/components/ContentContainer.vue'
 import WaveContainer from '@/components/WaveContainer.vue'
 import ErrorBox from '@/components/ErrorBox.vue'
@@ -26,6 +21,10 @@ const { session, undo, redo, load } = sessionLoader([
 ])
 const errorMessage = ref('')
 const loadingMessage = ref({ message: '', stuck: false })
+const concurrentEditing = ref({
+  text: false,
+  time: false,
+})
 
 const maxSubtitles = computed(() => {
   return Math.max(...session.value.data.map(x => x?.length || 0))
@@ -48,19 +47,43 @@ const handleSubtitlesUpdate = (subtitles, idx) => {
 }
 const handleSubtitleUpdate = ({ item, index }, idx) => {
   session.value.data[idx].subtitleRows[index] = item
-  const offset = session.value.data[idx].offsetMs || 0
+  let offset = session.value.data[idx].offsetMs || 0
   $update.targets.push({
     name: 'subtitle-update',
     target: item,
     idx,
   })
-  if (!session.value.data[idx].sync) return
-  if (item.match) {
-    const { subtitleId, videoId } = item.match
-    const matchedSubtitle = session.value.data[videoId].subtitleRows[subtitleId]
-    matchedSubtitle.text = item.text
-    matchedSubtitle.start = item.start + offset
-    matchedSubtitle.end = item.end + offset
+  if (
+    !session.value.data[idx].sync ||
+    !(concurrentEditing.value.time || concurrentEditing.value.text)
+  ) {
+    console.log(
+      'Subtitle not aligned or concurrent editing not enabled',
+      session.value.data[idx].sync,
+      concurrentEditing.value.time,
+      concurrentEditing.value.text,
+    )
+    return
+  }
+  if (item.aligned) {
+    const videoId = idx === session.value.data.length - 1 ? idx - 1 : idx + 1
+    const matchedSubtitle = session.value.data[videoId].subtitleRows.find(
+      x => x.id === item.aligned,
+    )
+    console.log('Subtitle is aligned to', matchedSubtitle)
+    if (!matchedSubtitle) {
+      return
+    }
+    if (session.value.data[videoId].offsetMs) {
+      offset = -session.value.data[videoId].offsetMs
+    }
+    if (concurrentEditing.value.time) {
+      matchedSubtitle.start = item.start + offset
+      matchedSubtitle.end = item.end + offset
+    }
+    if (concurrentEditing.value.text) {
+      matchedSubtitle.text = item.text
+    }
     $update.targets.push({
       name: 'subtitle-update',
       target: matchedSubtitle,
@@ -132,39 +155,6 @@ const extractSubtitles = async index => {
     errorMessage.value = error?.response?.data?.error || ''
   }
 }
-
-// other handlers
-const matchSubtitles = index => {
-  const isTimeAligned = index => {
-    const x = session.value.data[index]
-    return x?.offset && x.offset !== 0
-  }
-
-  if (session.value.data[index].sync) {
-    session.value.data[index].sync = false
-    session.value.data.forEach(x => (x.active = null))
-    return
-  }
-  const toMatchIndex = index === session.value.data.length - 1 ? index - 1 : index + 1
-  let match
-  if (isTimeAligned(index)) {
-    match = compareSubtitlesByTime({
-      subtitles1: session.value.data[index],
-      subtitles2: session.value.data[toMatchIndex],
-      index,
-      toMatchIndex,
-    })
-  } else {
-    match = compareSubtitlesByText({
-      subtitles1: session.value.data[index].subtitleRows,
-      subtitles2: session.value.data[toMatchIndex].subtitleRows,
-      index,
-      toMatchIndex,
-    })
-  }
-  if (match) session.value.data[index].sync = true
-  console.log('Matched: ', session.value.data)
-}
 const addVideoFile = async (e, i) => {
   session.value.data[i].videoFile = e.localPath || e.path || e
 }
@@ -193,9 +183,15 @@ const handleSetTimeTo = (time, idx) => {
 const handleActiveSubtitle = (subtitle, idx) => {
   session.value.data[idx].active = subtitle
   if (!session.value.data[idx].sync) return
-  if (subtitle.match) {
-    const { subtitleId, videoId } = subtitle.match
-    session.value.data[videoId].active = session.value.data[videoId].subtitleRows[subtitleId]
+  if (subtitle.aligned) {
+    const videoId = idx === session.value.data.length - 1 ? idx - 1 : idx + 1
+    const matchedSubtitle = session.value.data[videoId].subtitleRows.find(
+      x => x.id === subtitle.aligned,
+    )
+    if (!matchedSubtitle) {
+      return
+    }
+    session.value.data[videoId].active = matchedSubtitle
   } else {
     const videoId = idx === session.value.data.length - 1 ? idx - 1 : idx + 1
     session.value.data[videoId].active = null
@@ -235,15 +231,12 @@ onMounted(() => {
     },
   ])
 })
-// const handleAlignSubtitleTimes = () => {
-//   if (session.value.data.length !== 2) return
-//   alignSubtitleTimes(session.value.data)
-//   $update.targets.push({
-//     name: 'subtitles',
-//     target: null,
-//     idx: 0,
-//   })
-// }
+const handleConcurrentEditing = e => {
+  console.log('Concurrent editing', e)
+  if (!session.value.data.some(x => x.sync)) concurrentEditing.value = { text: false, time: false }
+  else concurrentEditing.value = e
+  console.log('Concurrent editing set to', concurrentEditing.value)
+}
 </script>
 
 <template>
@@ -257,13 +250,14 @@ onMounted(() => {
       :maxSubtitles="maxSubtitles"
       :is-last="idx === session.data.length - 1"
       :index="idx"
+      :concurrentEditing="concurrentEditing"
       @update:videoFile="e => addVideoFile(e, idx)"
       @update:subtitleFile="session.data[idx].subtitleFile = $event"
       @update:subtitles="handleSubtitlesUpdate($event, idx)"
       @update:subtitle="handleSubtitleUpdate($event, idx)"
       @update:time="session.data[idx].currentTime = $event"
       @extract-subtitles="() => extractSubtitles(idx)"
-      @match-subtitles="() => matchSubtitles(idx)"
+      @concurrent-editing="handleConcurrentEditing($event)"
       @add-subtitle="addSubtitle($event, idx)"
       @delete-subtitle="deleteSubtitle($event, idx)"
       @activate-subtitle="handleActiveSubtitle($event, idx)"

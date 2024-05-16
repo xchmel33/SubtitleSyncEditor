@@ -16,6 +16,7 @@ backend/session.json
 videos
 node_modules
 dist
+doc
 tests/data
 
 # Editor directories and files

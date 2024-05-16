@@ -139,8 +139,8 @@ const processSubtitleRegions = (
       //   `${s2.text} ${s2.start} ${s2.end}`,
       //   '\n',
       // )
-      s1.aligned = true
-      s2.aligned = true
+      s1.aligned = s2.id
+      s2.aligned = s1.id
     } else {
       // console.log('Not aligned:\t', s2.text, '\t', maxCorr)
       missMatchCount++
@@ -160,8 +160,6 @@ const alignSubtitleTimes = ({ offsetSec1, offsetSec2, audio1, audio2, sampleRate
   const { subtitleRows: subtitles2 } = data[1]
   const offsetMs1 = offsetSec1 * 1000
   const offsetMs2 = offsetSec2 * 1000
-  // console.log('OffsetMs1:', offsetMs1)
-  // console.log('OffsetMs2:', offsetMs2)
   if (offsetMs1) {
     session.averageCorrelation = processSubtitleRegions(
       subtitles1,
@@ -188,14 +186,14 @@ const alignSubtitleTimes = ({ offsetSec1, offsetSec2, audio1, audio2, sampleRate
   data[0] = {
     ...data[0],
     subtitleRows: subtitles1,
-    offsetMs: offset1,
+    offsetMs: offsetMs1,
     offset: offset1,
     sync: true,
   }
   data[1] = {
     ...data[1],
     subtitleRows: subtitles2,
-    offsetMs: offset2,
+    offsetMs: offsetMs2,
     offset: offset2,
     sync: true,
   }

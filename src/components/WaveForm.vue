@@ -275,8 +275,8 @@ const initWaveSurfer = async () => {
 }
 const extractRegions = (audioData, duration) => {
   const minValue = 0.01
-  const minSilenceDuration = 0.1
-  const mergeDuration = 0.2
+  const minSilenceDuration = 0.25
+  const mergeDuration = 0.1
   const scale = duration / audioData.length
   const silentRegions = []
 
@@ -366,11 +366,6 @@ const getAudioData = (start = -1, end = -1) => {
     audio: decodedData.getChannelData(0).slice(startIdx, endIdx),
     sampleRate: decodedData.sampleRate,
   }
-}
-
-const getAudioSum = (start = -1, end = -1) => {
-  const { audio } = getAudioData(start, end)
-  return audio.reduce((acc, val) => acc + Math.abs(val), 0)
 }
 
 const getRegionAudio = subtitleId => {

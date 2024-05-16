@@ -11,6 +11,10 @@ defineProps({
     type: Boolean,
     default: true,
   },
+  hasOverlay: {
+    type: Boolean,
+    default: true,
+  },
 })
 const menuOpen = ref(false)
 const emit = defineEmits(['open'])
@@ -27,7 +31,7 @@ const handleClose = () => {
 <template>
   <div
     class="overlay"
-    v-if="menuOpen"
+    v-if="menuOpen && hasOverlay"
   ></div>
   <transition
     :name="variant"
@@ -95,12 +99,12 @@ const handleClose = () => {
   opacity: 0;
 }
 .overlay {
-  position: fixed; /* or absolute, depending on your layout */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* Adjust color and opacity as needed */
-  z-index: 10; /* Ensure this is below the FileManager but above other content */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
 }
 </style>

@@ -111,7 +111,6 @@ export const sessionLoader = (keyBlacklist = [], maxUndoRedo = 20) => {
         //   })
         // })
         await updateHistory(lastSession.value)
-        console.log('Session updated, new:', session.value.data, 'old:', lastSession.value)
       }
       lastSession.value = [...currentData]
       if (session.value.history.undoList.length > maxUndoRedo) {

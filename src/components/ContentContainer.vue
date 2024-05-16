@@ -2,9 +2,10 @@
 import VideoPlayer from '@/components/VideoPlayer.vue'
 import SubtitleContainer from '@/components/SubtitleContainer.vue'
 import { formatSubtitles } from '@/utilities/subtitles'
-import { getCurrentInstance } from 'vue'
+import { getCurrentInstance, ref, watch } from 'vue'
 import { getFilename } from '@/utilities/helpers'
 import { handleKeyCombination } from '@/utilities/listeners'
+import ActionBtn from '@/components/lib/ActionBtn.vue'
 
 const { $apiService, $error } = getCurrentInstance().appContext.config.globalProperties
 
@@ -31,7 +32,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  concurrentEditing: {
+    type: Object,
+    default: () => ({
+      text: false,
+      time: false,
+    }),
+  },
 })
+
+const localConcurrentEditing = ref(props.concurrentEditing)
 
 const emit = defineEmits([
   'update:videoFile',
@@ -42,7 +52,7 @@ const emit = defineEmits([
   'extract-subtitles',
   'hover-subtitle',
   'activate-subtitle',
-  'match-subtitles',
+  'concurrent-editing',
   'add-subtitle',
   'delete-subtitle',
 ])
@@ -89,6 +99,14 @@ const handlePlayFromSubtitle = start => {
   const video = document.getElementById(`video_player_${props.item.videoFile}`)
   video.currentTime = start
 }
+
+const hasConcurrentEditing = () => {
+  return props.concurrentEditing.text || props.concurrentEditing.time
+}
+
+watch(props.concurrentEditing, () => {
+  localConcurrentEditing.value = props.concurrentEditing
+})
 </script>
 
 <template>
@@ -135,22 +153,59 @@ const handlePlayFromSubtitle = start => {
       style="position: absolute; right: 0; top: 32.5%; transform: translateX(66%); z-index: 1"
       v-if="item.videoFile && !isLast"
     >
-      <v-tooltip
-        location="top"
-        :text="`${!item.sync ? 'Enable' : 'Disable'} concurrent subtitle edit`"
+      <ActionBtn
+        icon="mdi-link"
+        testPrefix="concurrentEditing"
+        :has-popup="true"
+        :has-overlay="false"
       >
-        <template v-slot:activator="{ props }">
-          <v-btn
-            v-bind="props"
-            icon
-            small
-            style="border: 1px solid white"
-            :class="`icon_button_link${item.sync ? '_active' : ''}`"
-            @click="$emit('match-subtitles')"
-            ><v-icon color="white">mdi-link</v-icon></v-btn
+        <template #opener>
+          <v-tooltip
+            location="top"
+            :text="`${!hasConcurrentEditing() ? 'Enable' : 'Disable'} concurrent subtitle edit`"
           >
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon
+                small
+                style="border: 1px solid white"
+                :class="`icon_button_link${hasConcurrentEditing() ? '_active' : ''}`"
+                ><v-icon color="white">mdi-link</v-icon></v-btn
+              >
+            </template>
+          </v-tooltip>
         </template>
-      </v-tooltip>
+        <template #popup="{ methods }">
+          <div class="d-flex flex-column pa-4 ga-2">
+            <div class="d-flex justify-start ga-1">
+              <input
+                type="checkbox"
+                v-model="localConcurrentEditing.text"
+              />
+              <label>Edit text</label>
+            </div>
+            <div class="d-flex justify-start ga-1">
+              <input
+                type="checkbox"
+                v-model="localConcurrentEditing.time"
+              />
+              <label>Re-time</label>
+            </div>
+            <button
+              class="text_button px-4 pa-1"
+              @click="
+                () => {
+                  methods.toggleOpen(false)
+                  $emit('concurrent-editing', localConcurrentEditing)
+                }
+              "
+            >
+              Confirm
+            </button>
+          </div>
+        </template>
+      </ActionBtn>
     </div>
   </div>
 </template>

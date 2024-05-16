@@ -147,7 +147,6 @@ test('Concurrent timing', async ({ page }) => {
 test('Embed subtitles', async ({ page }) => {
   await page.goto('http://localhost:8081/test/')
   await page.waitForTimeout(3000)
-  return
   await page.getByTestId('video_player_0').hover()
   await page.getByTestId('video_player_0_action_mdi-content-save-plus').click()
   await expect(page.getByTestId('error_box')).toBeHidden()
@@ -156,7 +155,6 @@ test('Embed subtitles', async ({ page }) => {
 test('Export subtitles', async ({ page }) => {
   await page.goto('http://localhost:8081/')
   await page.waitForTimeout(3000)
-  return
   await page.getByTestId('subtitle_container_0').hover()
   await page.getByTestId('subtitle_container_0_action_mdi-close').click()
   await expect(page.getByTestId('subtitle_container_0_subtitle_row_0')).toBeHidden()
@@ -187,8 +185,6 @@ test('Keyboard shortcuts', async ({ page }) => {
   await expect(page.getByTestId('subtitle_container_0_subtitle_row_0')).toHaveClass(
     /table_row_active/,
   )
-  await page.waitForTimeout(3000)
-  return
 
   await page.keyboard.press('Insert')
   await page.keyboard.press('ArrowDown')

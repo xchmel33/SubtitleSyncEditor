@@ -20,6 +20,9 @@ const props = defineProps({
   tooltip: {
     default: '',
   },
+  hasOverlay: {
+    default: true,
+  },
 })
 const getIconSize = () => {
   switch (props.size) {
@@ -38,6 +41,7 @@ const getIconSize = () => {
 <template>
   <div>
     <MenuPopup
+      :has-overlay="hasOverlay"
       v-if="hasPopup"
       variant="popcenter"
       appear
@@ -74,8 +78,11 @@ const getIconSize = () => {
           </v-btn>
         </slot>
       </template>
-      <template #default>
-        <slot name="popup"></slot>
+      <template #default="{ methods }">
+        <slot
+          name="popup"
+          :methods="methods"
+        ></slot>
       </template>
     </MenuPopup>
     <v-tooltip

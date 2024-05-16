@@ -18,13 +18,16 @@ across several video versions. The application enables the concurrent creation a
 variations of a single video, targeting videos of different cuts and inserted scenes. This feature addresses a significant
 challenge in subtitle editing.
 
-Key features of the application include:
-- Spell checking
-- Speech timing editing features
 
-Additionally, the focus on user-friendliness and cross-platform compatibility ensures ease of use across common
-operating systems.
+## Project structure
+./doc - documentation including thesis in pdf as well as files required for creating PDF 
+./install - installation scripts
+./tests - automated tests
+./backend, ./src and other files - source code
 
+## How to use
+- please refer to the manual.md file or watch the video tutorial:
+https://www.youtube.com/watch?v=ZpKQ2GhPvZ8
 
 # Setup
 1. Install nodejs locally and activate node environment:
@@ -97,7 +100,6 @@ npm run devapp
 now go to localhost:8081 in web browser and you can use the app
 
 [Please use chrome browser, currently broken styles in firefox]
-
 
 ## Setup & run tests
 1. Download folder with test videos:
