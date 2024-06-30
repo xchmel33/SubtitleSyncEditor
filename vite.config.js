@@ -16,6 +16,11 @@ export default defineConfig(({ command }) => ({
   base: command === 'build' ? base : './',
   // plugins: [vue(), VueDevTools()],
   plugins: [vue()],
+  build: {
+    outDir: 'dist',
+    assetsInlineLimit: 0, // Ensure large assets are not inlined
+    sourcemap: true, // Enable source maps for debugging
+  },
   server: {
     cors: true, // Enable CORS
     headers: {

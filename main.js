@@ -5,6 +5,7 @@ const { app, BrowserWindow, ipcMain, Menu, MenuItem, dialog } = require('electro
 const { extractSubtitles, loadSubtitles } = require('./backend/converter.js')
 const path = require('node:path')
 const fs = require('node:fs')
+const url = require('node:url')
 const {
   saveFile,
   getFiles,
@@ -24,11 +25,20 @@ const createWindow = async () => {
     maximizable: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: true,
+      enableRemoteModule: false,
     },
   })
 
   // and load the index.html of the app.
-  await mainWindow.loadFile(path.resolve(__dirname, './dist/index.html'))
+  await mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, `/dist/index.html`),
+      protocol: 'file:',
+      slashes: true,
+    }),
+  )
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

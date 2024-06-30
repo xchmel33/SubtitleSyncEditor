@@ -1,0 +1,8 @@
+1. Allow opening srt and vtt files for subtitles only
+2. Allow opening mkv and mp4 files for videos only
+3. Fix: File is saved to new files only after another opening of the same file dialog
+4. Fix video loading issue:
+    - run with no GPU support, if working make it dynamically switchable
+    - make at least the development version work:
+        - fix opening files
+        - fix styles
