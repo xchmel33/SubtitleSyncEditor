@@ -98,9 +98,10 @@ const handlePlay = () => {
     @mouseleave="hovered = false"
   >
     <ActionMenu
+      class="mt-1"
       :testPrefix="testPrefix"
       :options="getActions().filter(x => x.condition === undefined || x.condition)"
-      :active="hovered || menuOpen"
+      :active="true"
       style="z-index: 99"
       @open="
         data => {
@@ -127,17 +128,17 @@ const handlePlay = () => {
     >
       <div
         v-if="!file"
-        class="ma-auto"
+        class="d-flex w-100"
+        style="height: 185px"
       >
-        Opened video will show here
+        <span class="ma-auto">Open video</span>
       </div>
       <video
         v-else
         ref="videoPlayer"
         :id="`video_player_${file}`"
         data-test="player"
-        height="100%"
-        style="border-radius: 20px"
+        style="border-radius: 20px; max-height: 185px"
         :src="file"
         :key="file"
         @timeupdate="handleTimeUpdate"

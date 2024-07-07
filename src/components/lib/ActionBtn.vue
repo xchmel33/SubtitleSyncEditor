@@ -26,6 +26,8 @@ const props = defineProps({
 })
 const getIconSize = () => {
   switch (props.size) {
+    case 'mini':
+      return '0.75rem'
     case 'small':
       return '1rem'
     case 'medium':
@@ -55,7 +57,7 @@ const getIconSize = () => {
             :text="tooltip"
           >
             <template v-slot:activator="{ props }">
-              <v-btn class="icon_button">
+              <v-btn :class="`icon_button icon_button_${size}`">
                 <v-icon
                   v-bind="props"
                   :style="{ transform: rotate ? `rotate(${rotate}deg)` : 'none' }"

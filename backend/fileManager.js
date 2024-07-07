@@ -75,4 +75,25 @@ const deleteVariant = (file, variantPaths) => {
   return variantPaths.filter(v => v !== file.path).pop(0)
 }
 
-module.exports = { getFiles, saveFile, getVariants, saveVariant, addTime, deleteVariant }
+const scanDirectory = (dir, type, isRecursive = false) => {
+  const extensions = type === 'video' ? ['mkv', 'mp4', 'avi', 'webm'] : ['srt', 'vtt']
+  const files = fs.readdirSync(dir)
+  files.forEach(f => {
+    if (fs.statSync(`${dir}/${f}`).isDirectory()) {
+      files.push(...scanDirectory(`${dir}/${f}`, type, true))
+    }
+  })
+  return files
+    .filter(f => extensions.includes(f.split('.').pop()))
+    .map(f => (isRecursive ? f : `${dir}/${f}`))
+}
+
+module.exports = {
+  getFiles,
+  saveFile,
+  getVariants,
+  saveVariant,
+  addTime,
+  deleteVariant,
+  scanDirectory,
+}

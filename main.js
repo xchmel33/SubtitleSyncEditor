@@ -13,6 +13,7 @@ const {
   getVariants,
   deleteVariant,
   addTime,
+  scanDirectory,
 } = require('./backend/fileManager')
 const { crossCorrelate, alignSignals } = require('./backend/correlate')
 const { mergeSubtitles, saveSubtitles, getWav } = require('./backend/converter')
@@ -83,28 +84,65 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
 
-ipcMain.handle('open-file-dialog', async () => {
+ipcMain.handle('open-file-dialog', async (event, { type }) => {
   const window = BrowserWindow.getFocusedWindow()
+  const extensions = type === 'video' ? ['mkv', 'mp4', 'avi', 'mov', 'flv', 'wmv'] : ['srt', 'vtt']
 
-  console.log('Open file dialog')
-
-  // Using await to wait for the dialog to close and capture the result
   const { canceled, filePaths } = await dialog.showOpenDialog(window, {
     properties: ['openFile'],
-    filters: [{ name: 'All Files', extensions: ['*'] }],
+    filters: [{ name: `${type.charAt(0).toUpperCase()}${type.slice(1)} files`, extensions }],
   })
 
   if (!canceled && filePaths.length > 0) {
     const selectedFilePath = filePaths[0]
-    console.log('Selected file: ', selectedFilePath)
     return {
       name: path.basename(selectedFilePath),
       path: selectedFilePath,
     }
-  } else {
-    // Handle the case where the dialog is canceled or no file is selected
-    return null
   }
+  return null
+})
+
+ipcMain.handle('open-folder-dialog', async (event, { type }) => {
+  const window = BrowserWindow.getFocusedWindow()
+
+  const { canceled, filePaths } = await dialog.showOpenDialog(window, {
+    properties: ['openDirectory'],
+  })
+
+  if (!canceled && filePaths.length > 0) {
+    const p = path.resolve(filePaths[0])
+    const localPath = p.replace(process.cwd(), '.')
+    const files = scanDirectory(p, type)
+    return {
+      localPath,
+      name: path.basename(p),
+      path: p,
+      files,
+    }
+  }
+  return null
+})
+
+ipcMain.handle('open-files-dialog', async (event, { type }) => {
+  const window = BrowserWindow.getFocusedWindow()
+  const extensions = type === 'video' ? ['mkv', 'mp4', 'avi', 'mov', 'flv', 'wmv'] : ['srt', 'vtt']
+
+  const { canceled, filePaths } = await dialog.showOpenDialog(window, {
+    properties: ['openFile', 'multiSelections'],
+    filters: [{ name: `${type.charAt(0).toUpperCase()}${type.slice(1)} files`, extensions }],
+  })
+
+  if (!canceled && filePaths.length > 0) {
+    const p = filePaths.map(f => path.resolve(f))
+    const localPath = p.map(f => f.replace(process.cwd(), '.'))
+    return {
+      localPath,
+      name: p.map(f => path.basename(f)),
+      files: p,
+    }
+  }
+  return null
 })
 
 ipcMain.handle('save-file-dialog', (event, { defaultName, defaultExtensions, extensionsName }) => {

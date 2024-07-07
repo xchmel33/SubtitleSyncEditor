@@ -1,6 +1,7 @@
 <script setup lang="js">
-import { onMounted, ref, getCurrentInstance, watch, computed } from 'vue'
+import { onMounted, ref, getCurrentInstance, computed } from 'vue'
 import { getFilename, sortByTimestamps, timestamp } from '@/utilities/helpers'
+import ActionBtn from '@/components/lib/ActionBtn.vue'
 
 const { $apiService, $error } = getCurrentInstance().appContext.config.globalProperties
 
@@ -20,17 +21,6 @@ const props = defineProps({
 })
 const recentFiles = ref([])
 const isElectron = computed(() => typeof window.electron !== 'undefined')
-
-const updateRecentFiles = async () => {
-  // console.log('updateRecentFiles', props.currentFile, recentFiles.value)
-  if (
-    props.currentFile &&
-    (!recentFiles.value.length ||
-      !recentFiles.value.map(file => file.path).includes(props.currentFile))
-  ) {
-    await handleAddFile(props.currentFile)
-  }
-}
 
 const getCwd = async () => {
   return (await $apiService.sendMessage('cwd', {}, { method: 'GET' })).data?.cwd || ''
@@ -58,32 +48,37 @@ const getFiles = async () => {
               // (isElectron.value ? !isLocalFile : isLocalFile || file.type === 'subtitles')
             )
           })
-          .map(x =>
-            isElectron.value || x.type === 'subtitles'
+          .map(x => {
+            x.hovered = false
+            return isElectron.value || x.type === 'subtitles'
               ? x
-              : { ...x, path: x.path.replace(cwd, '') },
-          ),
+              : { ...x, path: x.path.replace(cwd, '') }
+          }),
       )
     })
-    .then(async () => updateRecentFiles())
 }
 
 onMounted(async () => {
   await getFiles()
 })
 
-watch(
-  () => props.currentFile,
-  async () => updateRecentFiles(props.currentFile),
-)
-
-const handleAddFile = async path => {
+const saveFile = async path => {
+  if (!isElectron.value && props.type !== 'subtitles') {
+    const cwd = await getCwd()
+    path = path.replace(cwd, '')
+  }
   if (path === 'No file selected') return
   const file = { path, type: props.type, variants: [], time: timestamp() }
   const { data } = await $apiService.sendMessage('save-file', { file }, {}).catch(error => {
     $error.message = error?.response?.data?.error || ''
   })
-  if (data.saved) await getFiles()
+  if (data.status === 'ok') await getFiles()
+}
+const saveFiles = async files => {
+  await files.reduce(async (previousPromise, file) => {
+    await previousPromise
+    return saveFile(file.path || file)
+  }, Promise.resolve())
 }
 
 const emit = defineEmits(['update:current-file'])
@@ -91,23 +86,58 @@ const handleScroll = event => {
   event.stopPropagation()
   event.preventDefault()
 }
-const fileDialog = async () => {
+const addFile = async () => {
   const { data } = await $apiService.sendMessage('open-file-dialog', { type: props.type }, {})
   if (!data) {
     $error.message = 'No file selected'
     return
   }
-  if (!isElectron.value && props.type !== 'subtitles') {
-    const cwd = await getCwd()
-    data.path = data.path.replace(cwd, '')
+  await saveFile(data.path)
+}
+const addFiles = async () => {
+  const { data } = await $apiService.sendMessage('open-files-dialog', { type: props.type }, {})
+  if (!data) {
+    $error.message = 'No files selected'
+    return
   }
-  await handleOpenFile(data.path)
+  await saveFiles(data.files)
+}
+const addFolder = async () => {
+  const { data } = await $apiService.sendMessage('open-folder-dialog', { type: props.type }, {})
+  if (!data) {
+    $error.message = 'No folder selected'
+    return
+  }
+  await saveFiles(data.files)
 }
 
-const handleOpenFile = async path => {
+const openFile = async path => {
   await $apiService.sendMessage('open-file', { path, time: timestamp() }, {})
   emit('update:current-file', path)
 }
+
+const closeFile = async file => {
+  await $apiService.sendMessage('close-file', { path: file.path }, {})
+  await getFiles()
+}
+
+const openButtons = [
+  {
+    id: 'file',
+    text: 'Open file',
+    action: addFile,
+  },
+  {
+    id: 'folder',
+    text: 'Open folder',
+    action: addFolder,
+  },
+  {
+    id: 'files',
+    text: 'Open files',
+    action: addFiles,
+  },
+]
 </script>
 
 <template>
@@ -134,14 +164,17 @@ const handleOpenFile = async path => {
           @scroll="handleScroll"
         >
           <div
+            class="d-flex align-center"
             v-for="file in recentFiles.filter(f => !props.blacklist.includes(f.path))"
             :key="file"
+            @mouseover="file.hovered = true"
+            @mouseleave="file.hovered = false"
           >
             <button
               class="text_button_small text-left d-flex justify-space-between"
-              style="width: 97.5%; outline: none"
+              style="width: 92.5%; outline: none"
               :data-test="`file_manager_file_${getFilename(file.path)}`"
-              @click="async () => await handleOpenFile(file.path)"
+              @click="async () => await openFile(file.path)"
             >
               <span
                 style="max-width: 65%"
@@ -150,17 +183,26 @@ const handleOpenFile = async path => {
               >
               <span>{{ file.time || '' }}</span>
             </button>
+            <ActionBtn
+              v-if="file.hovered"
+              style="width: 1.25rem; height: 1.25rem"
+              class="d-flex my-auto"
+              icon="mdi-close"
+              size="mini"
+              @click="closeFile(file)"
+            ></ActionBtn>
           </div>
         </perfect-scrollbar>
       </div>
     </div>
-    <div class="d-flex">
+    <div class="d-flex ga-2 justify-end">
       <button
-        data-test="file_manager_open_new"
-        class="text_button ml-auto mt-3 px-4"
-        @click="fileDialog"
+        v-for="button in openButtons"
+        :data-test="`file_manager_open_${button.id}`"
+        class="text_button mt-3 px-4"
+        @click="button.action"
       >
-        Open new file
+        {{ button.text }}
       </button>
     </div>
   </div>

@@ -139,7 +139,7 @@ onMounted(() => {
       :testPrefix="testPrefix"
       style="padding: 0.5rem 0.25rem"
       :options="getActions().filter(action => action.condition === undefined || action.condition)"
-      :active="hovered || menuOpen"
+      :active="true"
       @open="
         data => {
           if (data === undefined) return

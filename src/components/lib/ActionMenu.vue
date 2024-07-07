@@ -36,6 +36,7 @@ defineProps({
         :hasPopup="option.hasPopup"
         :rotate="option.rotate"
         :tooltip="option.tooltip || ''"
+        size="medium"
         @open="$emit('open', $event)"
       >
         <template #popup>

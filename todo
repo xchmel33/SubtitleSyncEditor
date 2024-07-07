@@ -1,8 +1,11 @@
-1. Allow opening srt and vtt files for subtitles only
-2. Allow opening mkv and mp4 files for videos only
-3. Fix: File is saved to new files only after another opening of the same file dialog
-4. Fix video loading issue:
-    - run with no GPU support, if working make it dynamically switchable
-    - make at least the development version work:
-        - fix opening files
-        - fix styles
+✅ 1. Allow opening srt and vtt files for subtitles only (electron only)
+✅ 2. Allow opening mkv and mp4 files for videos only (electron only)
+✅ 3. Fix: File is saved to new files only after another opening of the same file dialog
+   - Check save variants
+4. Load multiple files at once
+    - electron handler
+5. Fix styling of the app
+6. Create executable file for Windows, Linux and MacOS:
+    - create download page
+7. Fix doc
+

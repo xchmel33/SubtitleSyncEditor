@@ -78,6 +78,7 @@ watch(() => props.currentFile, getVariants)
     </div>
     <ActionBtn
       icon="mdi-plus"
+      size="medium"
       :hasPopup="true"
       :tooltip="currentFile ? 'Add language variant' : 'Open file'"
       @click="emit('keep-menu-open', true)"

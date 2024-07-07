@@ -19,6 +19,8 @@ const cors = require('cors')
 const fs = require('fs')
 const { crossCorrelate, alignSubtitles } = require('./backend/correlate.js')
 const { getWav } = require('./backend/converter')
+const dialog = require('node-file-dialog')
+const { scanDirectory } = require('./backend/fileManager')
 
 const app = express()
 const port = 3000
@@ -107,36 +109,66 @@ app.post('/open-file', (req, res) => {
   res.send({ status: 'ok' })
 })
 app.post('/open-file-dialog', (req, res) => {
-  // Replace the path to your Python script as necessary
-  exec('python ./backend/file_upload.py', (error, stdout, stderr) => {
-    stdout = stdout.replace(/[\r\n]/g, '')
-    const p = path.resolve(stdout)
-    const localPath = p.replace(process.cwd(), '.')
-    console.log('localPath', localPath, 'cwd', process.cwd())
-    res.send({
-      name: path.basename(stdout),
-      error: error || stderr,
-      path: p,
-      localPath,
+  const config = { type: 'open-file' }
+  try {
+    dialog(config)
+      .then(file => {
+        const p = path.resolve(file[0])
+        const localPath = p.replace(process.cwd(), '.')
+        res.send({ localPath, name: path.basename(p), path: p })
+      })
+      .catch(err => {
+        res.status(500).send({ error: err })
+      })
+  } catch (err) {
+    res.status(500).send({ error: err })
+  }
+})
+
+app.post('/open-files-dialog', (req, res) => {
+  const config = { type: 'open-files' }
+  try {
+    dialog(config)
+      .then(files => {
+        const p = files.map(f => path.resolve(f))
+        const localPath = p.map(f => f.replace(process.cwd(), '.'))
+        res.send({ localPath, name: p.map(f => path.basename(f)), files: p })
+      })
+      .catch(err => {
+        res.status(500).send({ error: err })
+      })
+  } catch (err) {
+    res.status(500).send({ error: err })
+  }
+})
+app.post('/open-folder-dialog', (req, res) => {
+  const { type } = req.body
+  const config = { type: 'directory' }
+  try {
+    dialog(config).then(dir => {
+      const p = path.resolve(dir[0])
+      const localPath = p.replace(process.cwd(), '.')
+      const files = scanDirectory(p, type)
+      res.send({ localPath, name: path.basename(p), path: p, files })
     })
-  })
+  } catch (err) {
+    res.status(500).send({ error: err })
+  }
 })
 
 app.post('/save-file-dialog', (req, res) => {
-  // Assume content to write is sent in the request, e.g., req.body.content
-  const { defaultName, defaultExtensions } = req.body
-  const extensionsString = defaultExtensions.join(',')
-  const command = `python ./backend/file_save.py "${defaultName}" "${extensionsString}"`
-  exec(command, (error, stdout, stderr) => {
-    const filePath = stdout.trim().replace(/[\r\n]/g, '')
-    if (error || stderr || !filePath || filePath.includes('Error')) {
-      res.status(500).send({
-        error: error ? error.message : stderr || 'No file path returned.',
+  const config = { type: 'save-file' }
+  try {
+    dialog(config)
+      .then(file => {
+        res.send({ filePath: file[0] })
       })
-    } else {
-      res.send({ filePath })
-    }
-  })
+      .catch(err => {
+        res.status(500).send({ error: err })
+      })
+  } catch (err) {
+    res.status(500).send({ error: err })
+  }
 })
 
 app.get('/cwd', (req, res) => {
