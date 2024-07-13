@@ -35,10 +35,8 @@ const getFiles = async () => {
     })
     .then(({ data }) => {
       if (data.length === 0) {
-        $error.message = 'No files found'
         return
       }
-      console.log('cwd', cwd)
       recentFiles.value = sortByTimestamps(
         data
           .filter(file => {
@@ -55,6 +53,7 @@ const getFiles = async () => {
               : { ...x, path: x.path.replace(cwd, '') }
           }),
       )
+      console.log('Fetched files:', recentFiles.value)
     })
 }
 
@@ -72,7 +71,7 @@ const saveFile = async path => {
   const { data } = await $apiService.sendMessage('save-file', { file }, {}).catch(error => {
     $error.message = error?.response?.data?.error || ''
   })
-  if (data.status === 'ok') await getFiles()
+  if (data.status === 'ok' || data.saved) await getFiles()
 }
 const saveFiles = async files => {
   await files.reduce(async (previousPromise, file) => {
@@ -117,7 +116,7 @@ const openFile = async path => {
 }
 
 const closeFile = async file => {
-  await $apiService.sendMessage('close-file', { path: file.path }, {})
+  await $apiService.sendMessage('close-file', { id: file.id }, {})
   await getFiles()
 }
 
@@ -186,9 +185,10 @@ const openButtons = [
             <ActionBtn
               v-if="file.hovered"
               style="width: 1.25rem; height: 1.25rem"
-              class="d-flex my-auto"
+              class="d-flex my-auto ml-1"
               icon="mdi-close"
               size="mini"
+              bgColor="red"
               @click="closeFile(file)"
             ></ActionBtn>
           </div>

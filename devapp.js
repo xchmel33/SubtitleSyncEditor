@@ -10,6 +10,7 @@ const {
 const {
   getFiles,
   saveFile,
+  closeFile,
   getVariants,
   deleteVariant,
   saveVariant,
@@ -106,6 +107,11 @@ app.post('/delete-variant', (req, res) => {
 app.post('/open-file', (req, res) => {
   const { time, path } = req.body
   addTime(path, time)
+  res.send({ status: 'ok' })
+})
+app.post('/close-file', (req, res) => {
+  const { id } = req.body
+  closeFile(id)
   res.send({ status: 'ok' })
 })
 app.post('/open-file-dialog', (req, res) => {

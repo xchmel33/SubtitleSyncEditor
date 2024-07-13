@@ -240,44 +240,46 @@ const handleConcurrentEditing = e => {
 </script>
 
 <template>
-  <div class="d-flex ga-4">
-    <ContentContainer
-      style="height: 70vh; max-width: 50%"
-      class="flex-1-1"
-      v-for="(item, idx) in session.data"
-      :key="item.id"
-      :item="item"
-      :maxSubtitles="maxSubtitles"
-      :is-last="idx === session.data.length - 1"
-      :index="idx"
-      :concurrentEditing="concurrentEditing"
-      @update:videoFile="e => addVideoFile(e, idx)"
-      @update:subtitleFile="session.data[idx].subtitleFile = $event"
-      @update:subtitles="handleSubtitlesUpdate($event, idx)"
-      @update:subtitle="handleSubtitleUpdate($event, idx)"
-      @update:time="session.data[idx].currentTime = $event"
-      @extract-subtitles="() => extractSubtitles(idx)"
-      @concurrent-editing="handleConcurrentEditing($event)"
-      @add-subtitle="addSubtitle($event, idx)"
-      @delete-subtitle="deleteSubtitle($event, idx)"
-      @activate-subtitle="handleActiveSubtitle($event, idx)"
+  <div class="d-flex flex-column ga-1">
+    <div class="d-flex ga-4">
+      <ContentContainer
+        style="height: 65vh; max-width: 50%"
+        class="flex-1-1"
+        v-for="(item, idx) in session.data"
+        :key="item.id"
+        :item="item"
+        :maxSubtitles="maxSubtitles"
+        :is-last="idx === session.data.length - 1"
+        :index="idx"
+        :concurrentEditing="concurrentEditing"
+        @update:videoFile="e => addVideoFile(e, idx)"
+        @update:subtitleFile="session.data[idx].subtitleFile = $event"
+        @update:subtitles="handleSubtitlesUpdate($event, idx)"
+        @update:subtitle="handleSubtitleUpdate($event, idx)"
+        @update:time="session.data[idx].currentTime = $event"
+        @extract-subtitles="() => extractSubtitles(idx)"
+        @concurrent-editing="handleConcurrentEditing($event)"
+        @add-subtitle="addSubtitle($event, idx)"
+        @delete-subtitle="deleteSubtitle($event, idx)"
+        @activate-subtitle="handleActiveSubtitle($event, idx)"
+      />
+    </div>
+    <WaveContainer
+      :waveforms="session.data"
+      :zoomLevel="session.zoomLevel"
+      :wsStartPos="session.wsStartPos"
+      @update:zoom="session.zoomLevel = $event"
+      @update:wsStart="session.wsStartPos = $event"
+      @update:offset="handleAlignmentUpdate"
+      @update:subtitle="handleSubtitleUpdate($event.unwrap, $event.idx)"
+      @update:subtitles="handleSubtitlesUpdate($event.unwrap, $event.idx)"
+      @add-subtitle="addSubtitle($event.unwrap, $event.idx)"
+      @delete-subtitle="deleteSubtitle($event.unwrap, $event.idx)"
+      @set-time-to="handleSetTimeTo($event.unwrap, $event.idx)"
+      @activate-subtitle="handleActiveSubtitle($event.unwrap, $event.idx)"
+      @reload-session="async () => await load()"
     />
   </div>
-  <WaveContainer
-    :waveforms="session.data"
-    :zoomLevel="session.zoomLevel"
-    :wsStartPos="session.wsStartPos"
-    @update:zoom="session.zoomLevel = $event"
-    @update:wsStart="session.wsStartPos = $event"
-    @update:offset="handleAlignmentUpdate"
-    @update:subtitle="handleSubtitleUpdate($event.unwrap, $event.idx)"
-    @update:subtitles="handleSubtitlesUpdate($event.unwrap, $event.idx)"
-    @add-subtitle="addSubtitle($event.unwrap, $event.idx)"
-    @delete-subtitle="deleteSubtitle($event.unwrap, $event.idx)"
-    @set-time-to="handleSetTimeTo($event.unwrap, $event.idx)"
-    @activate-subtitle="handleActiveSubtitle($event.unwrap, $event.idx)"
-    @reload-session="async () => await load()"
-  />
   <ErrorBox
     data-test="error_box"
     :error="errorMessage"
@@ -295,7 +297,7 @@ const handleConcurrentEditing = e => {
 #app {
   padding: 1rem 0 !important;
   max-width: 100vw !important;
-  width: 90vw;
+  width: 98vw;
   height: 100vh;
 }
 html {

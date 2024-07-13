@@ -1,11 +1,13 @@
-✅ 1. Allow opening srt and vtt files for subtitles only (electron only)
-✅ 2. Allow opening mkv and mp4 files for videos only (electron only)
-✅ 3. Fix: File is saved to new files only after another opening of the same file dialog
-   - Check save variants
-4. Load multiple files at once
-    - electron handler
-5. Fix styling of the app
-6. Create executable file for Windows, Linux and MacOS:
+✅ Allow opening srt and vtt files for subtitles only (electron only)
+✅ Allow opening mkv and mp4 files for videos only (electron only)
+✅ Fix: File is saved to new files only after another opening of the same file dialog
+✅ Load multiple files at once
+✅ Fix saved files not showing in Electron build
+✅ Fix delete variant in Electron
+✅ Close files
+
+Fix styling of the app
+Create executable file for Windows, Linux and MacOS:
     - create download page
-7. Fix doc
+Fix doc
 

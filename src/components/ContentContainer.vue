@@ -150,7 +150,7 @@ watch(props.concurrentEditing, () => {
       />
     </div>
     <div
-      style="position: absolute; right: 0; top: 32.5%; transform: translateX(66%); z-index: 1"
+      style="position: absolute; right: 0; top: 32%; transform: translateX(66%); z-index: 1"
       v-if="item.videoFile && !isLast"
     >
       <ActionBtn

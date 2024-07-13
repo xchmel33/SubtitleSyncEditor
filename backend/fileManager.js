@@ -11,7 +11,10 @@ const getFiles = () => {
 const saveFile = file => {
   const files = getFiles()
   if (files.some(f => f.path === file.path) || !file?.path) return false
-  files.push(file)
+  files.push({
+    ...file,
+    id: files.length,
+  })
   fs.writeFileSync('./backend/files.json', JSON.stringify(files, null, 2))
   console.log(`File saved: ${file.path}`)
   return true
@@ -75,6 +78,18 @@ const deleteVariant = (file, variantPaths) => {
   return variantPaths.filter(v => v !== file.path).pop(0)
 }
 
+const closeFile = id => {
+  const data = getFiles()
+  fs.writeFileSync(
+    './backend/files.json',
+    JSON.stringify(
+      data.filter(f => f.id !== id),
+      null,
+      2,
+    ),
+  )
+}
+
 const scanDirectory = (dir, type, isRecursive = false) => {
   const extensions = type === 'video' ? ['mkv', 'mp4', 'avi', 'webm'] : ['srt', 'vtt']
   const files = fs.readdirSync(dir)
@@ -92,6 +107,7 @@ module.exports = {
   getFiles,
   saveFile,
   getVariants,
+  closeFile,
   saveVariant,
   addTime,
   deleteVariant,

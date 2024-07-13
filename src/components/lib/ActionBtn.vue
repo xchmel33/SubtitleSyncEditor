@@ -23,6 +23,9 @@ const props = defineProps({
   hasOverlay: {
     default: true,
   },
+  bgColor: {
+    default: '',
+  },
 })
 const getIconSize = () => {
   switch (props.size) {
@@ -57,7 +60,10 @@ const getIconSize = () => {
             :text="tooltip"
           >
             <template v-slot:activator="{ props }">
-              <v-btn :class="`icon_button icon_button_${size}`">
+              <v-btn
+                :class="`icon_button icon_button_${size}`"
+                :color="bgColor || undefined"
+              >
                 <v-icon
                   v-bind="props"
                   :style="{ transform: rotate ? `rotate(${rotate}deg)` : 'none' }"
@@ -69,7 +75,8 @@ const getIconSize = () => {
           </v-tooltip>
           <v-btn
             v-else
-            class="icon_button"
+            :class="`icon_button icon_button_${size}`"
+            :color="bgColor || undefined"
           >
             <v-icon
               v-bind="props"
@@ -111,6 +118,7 @@ const getIconSize = () => {
       v-else
       class="icon_button"
       :class="`icon_button_${size}`"
+      :color="bgColor || undefined"
       @click="callback"
     >
       <v-icon

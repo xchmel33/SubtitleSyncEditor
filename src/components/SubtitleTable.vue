@@ -23,11 +23,11 @@ const emit = defineEmits([
 const subtitleTable = ref(null)
 const mergingSubtitles = ref(false)
 const headers = reactive([
-  { title: 'Aligned', value: 'aligned', align: 'center', width: '3rem' },
-  { title: 'Duration', value: 'duration', align: 'center', width: '4rem' },
-  { title: 'CPS', value: 'cps', align: 'center', width: '4rem' },
-  { title: 'Subtitle text', value: 'text', align: 'center', width: '25rem' },
-  { title: 'Actions', value: 'actions', align: 'right', width: '6.5rem' },
+  { title: 'Align', value: 'aligned', align: 'center', width: '6%' },
+  { title: 'Len', value: 'duration', align: 'center', width: '7%' },
+  { title: 'CPS', value: 'cps', align: 'center', width: '7%' },
+  { title: 'Subtitle text', value: 'text', align: 'left', width: '63%' },
+  { title: 'Actions', value: 'actions', align: 'right', width: '15%' },
 ])
 const activeSubtitle = ref(props.activeSubtitleProp)
 const splitSubtitles = idx => {
@@ -221,16 +221,17 @@ watch(
     tabindex="0"
     @keydown.stop="handleMultipleKeyCombinations"
   >
-    <div class="table_row table_row_header d-flex w-100 ga-1 mt-2">
-      <div
-        v-for="header in headers"
-        :key="header.value"
-        class="table_cell_header mt-auto"
-        :style="{ width: header.width }"
-      >
-        <span v-if="header.value !== 'actions'">{{ header.title }}</span>
-      </div>
-    </div>
+    <!--    <div class="table_row table_row_header d-flex w-100 ga-1 mt-2">-->
+    <!--      <div-->
+    <!--        v-for="header in headers"-->
+    <!--        :key="header.value"-->
+    <!--        class="table_cell_header mt-auto"-->
+    <!--        :class="header.align === 'center' ? 'text-center' : 'text-left'"-->
+    <!--        :style="{ width: header.width }"-->
+    <!--      >-->
+    <!--        <span v-if="header.value !== 'actions'">{{ header.title }}</span>-->
+    <!--      </div>-->
+    <!--    </div>-->
     <perfect-scrollbar>
       <div
         class="table_row d-flex w-100 ga-1"
@@ -256,26 +257,48 @@ watch(
           class="table_cell"
           :style="{ width: header.width }"
         >
-          <v-icon
+          <v-tooltip
             v-if="header.value === 'aligned'"
-            :color="item.aligned ? 'green' : 'red'"
-            :icon="item.aligned ? 'mdi-check' : 'mdi-close'"
-            :data-test="item.aligned ? `aligned_${idx}` : `not_aligned_${idx}`"
-            class="my-auto"
-            :style="{ width: header.width }"
+            location="top"
+            :text="`Subtitle is ${item.aligned ? 'aligned' : 'not aligned'}`"
           >
-          </v-icon>
-          <span
+            <template v-slot:activator="{ props }">
+              <v-icon
+                v-bind="props"
+                :color="item.aligned ? 'green' : 'red'"
+                :icon="item.aligned ? 'mdi-check' : 'mdi-close'"
+                :data-test="item.aligned ? `aligned_${idx}` : `not_aligned_${idx}`"
+                class="my-auto"
+                :style="{ width: header.width }"
+              />
+            </template>
+          </v-tooltip>
+          <v-tooltip
             v-else-if="header.value === 'cps'"
-            :style="{ color: colorizeCPS(item) }"
+            location="top"
+            :text="`${calculateCPS(item)} characters per second`"
           >
-            {{ calculateCPS(item) }}
-          </span>
-          <span v-else-if="header.value === 'duration'"> {{ calculateDuration(item) }} s </span>
+            <template v-slot:activator="{ props }">
+              <span
+                v-bind="props"
+                :style="{ color: colorizeCPS(item) }"
+              >
+                {{ calculateCPS(item) }}
+              </span>
+            </template>
+          </v-tooltip>
+          <v-tooltip
+            v-else-if="header.value === 'duration'"
+            location="top"
+            :text="`Duration: ${calculateDuration(item)} seconds`"
+          >
+            <template v-slot:activator="{ props }">
+              <span v-bind="props"> {{ calculateDuration(item) }}s </span>
+            </template>
+          </v-tooltip>
           <div
             v-else-if="header.value === 'actions' && activeSubtitle?.id === item.id"
             class="d-flex ga-1 table_cell"
-            style="width: 4rem"
           >
             <ActionBtn
               data-test="split_subtitle"
@@ -313,10 +336,7 @@ watch(
             v-else
             :data-test="header.title === 'Subtitle text' ? `subtitle_input_${idx}` : ''"
             :id="`text_${item.id}`"
-            :style="{
-              flexGrow: header.title === 'Subtitle text' ? 1 : 0,
-              width: header.width,
-            }"
+            style="width: 100%"
             spellcheck="true"
             :disabled="item.id === undefined"
             v-model="item[header.value]"
@@ -334,6 +354,7 @@ input:focus {
   outline: none;
 }
 .table {
+  max-height: 100%;
   background-color: var(--clr-background);
   border: 2px var(--clr-white) solid;
   border-radius: 20px;

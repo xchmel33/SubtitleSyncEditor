@@ -14,6 +14,7 @@ const {
   deleteVariant,
   addTime,
   scanDirectory,
+  closeFile,
 } = require('./backend/fileManager')
 const { crossCorrelate, alignSignals } = require('./backend/correlate')
 const { mergeSubtitles, saveSubtitles, getWav } = require('./backend/converter')
@@ -173,6 +174,11 @@ ipcMain.handle('extract-subtitles', async (event, { file }) => {
   }
 })
 
+ipcMain.handle('close-file', (event, { id }) => {
+  closeFile(id)
+  return { status: 'ok' }
+})
+
 ipcMain.handle('embed-subtitles', async (event, { inputFilePath, subtitles, outputFilePath }) => {
   await mergeSubtitles(inputFilePath, subtitles, outputFilePath)
   fs.rmSync(subtitles)
@@ -219,6 +225,7 @@ ipcMain.handle('save-variant', (event, { file, variant }) => {
 })
 
 ipcMain.handle('delete-variant', (event, { file, variants }) => {
+  console.log('Delete variant:', file, variants)
   return deleteVariant(file, variants)
 })
 

@@ -43,6 +43,7 @@ const handleClick = variant => {
   }
 }
 const deleteVariant = async () => {
+  console.log('Delete variant')
   const { data } = await $apiService.sendMessage('delete-variant', {
     file: { path: props.currentFile, type: props.type },
     variants: variants.value,
