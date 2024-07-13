@@ -92,7 +92,7 @@ const handlePlay = () => {
 <template>
   <div
     :data-test="testPrefix"
-    class="wrapper mb-4 d-flex ga-4"
+    class="wrapper mb-2 d-flex ga-4"
     style="padding: 0 !important"
     @mouseover="hovered = true"
     @mouseleave="hovered = false"

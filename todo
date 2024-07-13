@@ -5,8 +5,8 @@
 ✅ Fix saved files not showing in Electron build
 ✅ Fix delete variant in Electron
 ✅ Close files
+✅ Fix styling of the app
 
-Fix styling of the app
 Create executable file for Windows, Linux and MacOS:
     - create download page
 Fix doc

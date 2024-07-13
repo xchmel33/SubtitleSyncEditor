@@ -122,7 +122,7 @@ watch(props.concurrentEditing, () => {
   >
     <div class="w-100 d-flex flex-column">
       <VideoPlayer
-        style="height: 35%"
+        style="height: 34%"
         :file="item.videoFile"
         :subtitleRows="item.subtitleRows"
         :testPrefix="`video_player_${index}`"
@@ -131,7 +131,7 @@ watch(props.concurrentEditing, () => {
         @embed:subtitles="embedSubtitlesToVideo"
       />
       <SubtitleContainer
-        style="height: 65%"
+        style="height: 64%"
         :rows="maxSubtitles"
         :subtitles="item.subtitleRows"
         :has-video="!!item.videoFile"
@@ -150,8 +150,14 @@ watch(props.concurrentEditing, () => {
       />
     </div>
     <div
-      style="position: absolute; right: 0; top: 32%; transform: translateX(66%); z-index: 1"
-      v-if="item.videoFile && !isLast"
+      style="
+        position: absolute;
+        right: 0;
+        top: calc(34% + 4px);
+        transform: translateX(calc(50% + 4px)) translateY(-50%);
+        z-index: 1;
+      "
+      v-if="item.videoFile && item.subtitleRows.length && !isLast"
     >
       <ActionBtn
         icon="mdi-link"
@@ -168,7 +174,7 @@ watch(props.concurrentEditing, () => {
               <v-btn
                 v-bind="props"
                 icon
-                small
+                size="small"
                 style="border: 1px solid white"
                 :class="`icon_button_link${hasConcurrentEditing() ? '_active' : ''}`"
                 ><v-icon color="white">mdi-link</v-icon></v-btn

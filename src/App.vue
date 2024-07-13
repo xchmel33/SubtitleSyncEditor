@@ -241,7 +241,7 @@ const handleConcurrentEditing = e => {
 
 <template>
   <div class="d-flex flex-column ga-1">
-    <div class="d-flex ga-4">
+    <div class="d-flex ga-2">
       <ContentContainer
         style="height: 65vh; max-width: 50%"
         class="flex-1-1"

@@ -89,7 +89,7 @@ const isSynced = () => {
 </script>
 
 <template>
-  <div class="d-flex ga-8 mt-2">
+  <div class="d-flex ga-8 mt-4">
     <div
       style="overflow-x: auto"
       class="d-flex flex-column ga-2 flex-1-1"
@@ -122,10 +122,14 @@ const isSynced = () => {
         />
       </div>
     </div>
-    <div class="h-100 d-flex justify-center align-center ga-5 flex-column">
+    <div
+      style="font-size: small"
+      class="h-100 d-flex justify-center align-center ga-5 flex-column my-auto"
+    >
       <div class="d-flex align-center mb-5 flex-column">
         <label for="time-zoom">Time zoom</label>
         <input
+          class="range_input"
           data-test="time-zoom"
           type="range"
           id="time-zoom"
@@ -137,8 +141,13 @@ const isSynced = () => {
         <span>{{ zoomLevel }}</span>
       </div>
       <div class="d-flex align-center mb-5 flex-column">
-        <label for="wave-zoom">Wave zoom</label>
+        <label
+          style="font-size: small"
+          for="wave-zoom"
+          >Wave zoom</label
+        >
         <input
+          class="range_input"
           type="range"
           id="wave-zoom"
           min="50"
@@ -152,4 +161,9 @@ const isSynced = () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.range_input {
+  margin: 0.25rem 0;
+  height: 0.25rem;
+}
+</style>

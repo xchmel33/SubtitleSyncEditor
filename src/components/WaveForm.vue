@@ -567,7 +567,12 @@ const regionButtons = [
 </script>
 <template>
   <div>
-    <div class="d-flex align-center justify-space-between">{{ videoName }}</div>
+    <div
+      style="font-size: x-small"
+      class="d-flex align-center justify-space-between"
+    >
+      {{ videoName }}
+    </div>
     <div style="width: 60vw">
       <v-progress-circular
         v-if="loading"
