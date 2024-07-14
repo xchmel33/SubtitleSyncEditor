@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, getCurrentInstance, ref, watch } from 'vue'
+import { defineProps, getCurrentInstance, onMounted, ref, watch } from 'vue'
 import { formatSubtitles } from '@/utilities/subtitles'
 
 const { $apiService, $error } = getCurrentInstance().appContext.config.globalProperties
@@ -26,17 +26,13 @@ const previewSubtitles = async subtitles => {
     $error.message = error?.response?.data?.error || ''
   }
 }
-watch(
-  () => props.subtitleRows,
-  async () => {
-    if (!props.subtitleRows.length) {
-      preview.value = ''
-      return
-    }
-    preview.value = await previewSubtitles(props.subtitleRows)
-  },
-  { deep: true },
-)
+onMounted(async () => {
+  if (!props.subtitleRows.length) {
+    preview.value = ''
+    return
+  }
+  preview.value = await previewSubtitles(props.subtitleRows)
+})
 </script>
 
 <template>

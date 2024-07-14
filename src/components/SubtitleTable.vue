@@ -257,45 +257,21 @@ watch(
           class="table_cell"
           :style="{ width: header.width }"
         >
-          <v-tooltip
+          <v-icon
             v-if="header.value === 'aligned'"
-            location="top"
-            :text="`Subtitle is ${item.aligned ? 'aligned' : 'not aligned'}`"
+            :color="item.aligned ? 'green' : 'red'"
+            :icon="item.aligned ? 'mdi-check' : 'mdi-close'"
+            :data-test="item.aligned ? `aligned_${idx}` : `not_aligned_${idx}`"
+            class="my-auto"
           >
-            <template v-slot:activator="{ props }">
-              <v-icon
-                v-bind="props"
-                :color="item.aligned ? 'green' : 'red'"
-                :icon="item.aligned ? 'mdi-check' : 'mdi-close'"
-                :data-test="item.aligned ? `aligned_${idx}` : `not_aligned_${idx}`"
-                class="my-auto"
-                :style="{ width: header.width }"
-              />
-            </template>
-          </v-tooltip>
-          <v-tooltip
+          </v-icon>
+          <span
             v-else-if="header.value === 'cps'"
-            location="top"
-            :text="`${calculateCPS(item)} characters per second`"
+            :style="{ color: colorizeCPS(item) }"
           >
-            <template v-slot:activator="{ props }">
-              <span
-                v-bind="props"
-                :style="{ color: colorizeCPS(item) }"
-              >
-                {{ calculateCPS(item) }}
-              </span>
-            </template>
-          </v-tooltip>
-          <v-tooltip
-            v-else-if="header.value === 'duration'"
-            location="top"
-            :text="`Duration: ${calculateDuration(item)} seconds`"
-          >
-            <template v-slot:activator="{ props }">
-              <span v-bind="props"> {{ calculateDuration(item) }}s </span>
-            </template>
-          </v-tooltip>
+            {{ calculateCPS(item) }}
+          </span>
+          <span v-else-if="header.value === 'duration'"> {{ calculateDuration(item) }} s </span>
           <div
             v-else-if="header.value === 'actions' && activeSubtitle?.id === item.id"
             class="d-flex ga-1 table_cell"

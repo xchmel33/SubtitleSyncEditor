@@ -214,6 +214,8 @@ const initWaveSurfer = async () => {
     cursorColor: 'red',
     hideScrollbar: true,
     barAlign: 'bottom',
+    barWidth: 2,
+    pixelRatio: 1,
     plugins: [
       Hover.create({
         lineColor: '#ff0000',
