@@ -1,6 +1,7 @@
 const fs = require('fs')
 const wav = require('wav')
 const Meyda = require('meyda')
+const { getWav } = require('./converter')
 
 const readWavFile = filePath => {
   return new Promise((resolve, reject) => {
@@ -242,9 +243,66 @@ const alignSubtitles = async ({ segment, audio, sampleRate, segmentIndex, audioI
   return { offsetSeconds }
 }
 
+const durationMatch = (shortSubs, longSubs, offset = 0, threshold = 0.1) => {
+  const sub = shortSubs[offset]
+  const matchIndex = longSubs.findIndex(s => Math.abs(s.duration - sub.duration) < threshold)
+  let totalMatches = 0
+  longSubs.slice(matchIndex).some((s, i) => {
+    if (offset + i >= shortSubs.length) return true
+    if (Math.abs(s.duration - shortSubs[offset + i].duration) < threshold) {
+      totalMatches++
+      return false
+    }
+    return true
+  })
+  return { totalMatches, matchIndex }
+}
+
+const alignAllSubtitles = async () => {
+  const { data } = JSON.parse(fs.readFileSync('./backend/session.json').toString())
+
+  const subtitles1 = data[0]?.subtitleRows
+  const subtitles2 = data[1]?.subtitleRows
+
+  const longerSubtitles = subtitles1.length > subtitles2.length ? subtitles1 : subtitles2
+  const shorterSubtitles = subtitles1.length > subtitles2.length ? subtitles2 : subtitles1
+  const longerSubtitlesIndex = subtitles1.length > subtitles2.length ? 0 : 1
+  const shorterSubtitlesIndex = subtitles1.length > subtitles2.length ? 1 : 0
+
+  let offset = 0
+  const matches = []
+  while (offset !== shorterSubtitles.length) {
+    const { totalMatches, matchIndex } = durationMatch(shorterSubtitles, longerSubtitles, offset)
+    if (totalMatches === 0) {
+      offset++
+      continue
+    }
+    matches.push({ offset, totalMatches, matchIndex })
+    offset += totalMatches
+  }
+  const maxMatchIndex =
+    matches.reduce((a, b) => (a.totalMatches > b.totalMatches ? a : b))?.offset || 0
+
+  const alignmentData = {
+    segment: {
+      file: await getWav(data[shorterSubtitlesIndex].videoFile, 8000),
+      start: shorterSubtitles[maxMatchIndex].start / 1000,
+      duration: parseFloat(shorterSubtitles[maxMatchIndex].duration),
+    },
+    audio: await getWav(data[longerSubtitlesIndex].videoFile, 8000),
+    segmentIndex: shorterSubtitlesIndex,
+    audioIndex: longerSubtitlesIndex,
+    sampleRate: 8000,
+  }
+  console.log('Alignment data:', JSON.stringify(alignmentData, null, 2))
+  const { offsetSeconds } = await alignSubtitles(alignmentData)
+  return offsetSeconds
+}
+
 module.exports = {
   alignSignals,
-  extractMFCCs,
-  crossCorrelateMFCC,
+  alignAllSubtitles,
   alignSubtitles,
+  crossCorrelateMFCC,
+  extractMFCCs,
 }

@@ -39,6 +39,10 @@ const props = defineProps({
       time: false,
     }),
   },
+  allFilesLoaded: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const localConcurrentEditing = ref(props.concurrentEditing)
@@ -100,6 +104,8 @@ const handlePlayFromSubtitle = start => {
   video.currentTime = start
 }
 
+const alignAllSubtitles = async () => $apiService.sendMessage('align-all-subtitles', {})
+
 const hasConcurrentEditing = () => {
   return props.concurrentEditing.text || props.concurrentEditing.time
 }
@@ -157,13 +163,14 @@ watch(props.concurrentEditing, () => {
         transform: translateX(calc(50% + 4px)) translateY(-50%);
         z-index: 1;
       "
-      v-if="item.videoFile && item.subtitleRows.length && !isLast"
+      v-if="allFilesLoaded && !isLast"
     >
       <ActionBtn
         icon="mdi-link"
         testPrefix="concurrentEditing"
         :has-popup="true"
         :has-overlay="false"
+        v-if="item.sync"
       >
         <template #opener>
           <v-tooltip
@@ -212,6 +219,14 @@ watch(props.concurrentEditing, () => {
           </div>
         </template>
       </ActionBtn>
+      <ActionBtn
+        v-else
+        icon="mdi-autorenew"
+        tooltip="Align subtitles"
+        size="xlarge"
+        :rounded="true"
+        @click="alignAllSubtitles"
+      ></ActionBtn>
     </div>
   </div>
 </template>

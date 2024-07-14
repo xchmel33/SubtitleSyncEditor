@@ -7,6 +7,10 @@
 ✅ Close files
 ✅ Fix styling of the app
 
+Auto align: find the longest sequence of similar subtitles by common durations and align them
+Remove session.js and use only load and save
+Remove subtitle preview watch
+Fix loading into the waveform
 Create executable file for Windows, Linux and MacOS:
     - create download page
 Fix doc

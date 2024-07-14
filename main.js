@@ -16,7 +16,7 @@ const {
   scanDirectory,
   closeFile,
 } = require('./backend/fileManager')
-const { crossCorrelate, alignSignals } = require('./backend/correlate')
+const { crossCorrelate, alignSignals, alignAllSubtitles } = require('./backend/correlate')
 const { mergeSubtitles, saveSubtitles, getWav } = require('./backend/converter')
 
 const createWindow = async () => {
@@ -257,6 +257,10 @@ ipcMain.handle('get-wav', async (event, { videoFilename }) => {
 
 ipcMain.handle('align-signals', async (event, { segment, audio }) => {
   return await alignSignals({ segment, audio, sampleRate })
+})
+
+ipcMain.handle('align-all-subtitles', async event => {
+  return await alignAllSubtitles()
 })
 
 ipcMain.handle('cwd', () => {

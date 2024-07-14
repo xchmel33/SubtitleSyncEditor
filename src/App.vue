@@ -237,6 +237,10 @@ const handleConcurrentEditing = e => {
   else concurrentEditing.value = e
   console.log('Concurrent editing set to', concurrentEditing.value)
 }
+
+const allFilesLoaded = computed(() => {
+  return session.value.data.every(x => x.videoFile && x.subtitleRows.length)
+})
 </script>
 
 <template>
@@ -252,6 +256,7 @@ const handleConcurrentEditing = e => {
         :is-last="idx === session.data.length - 1"
         :index="idx"
         :concurrentEditing="concurrentEditing"
+        :allFilesLoaded="allFilesLoaded"
         @update:videoFile="e => addVideoFile(e, idx)"
         @update:subtitleFile="session.data[idx].subtitleFile = $event"
         @update:subtitles="handleSubtitlesUpdate($event, idx)"

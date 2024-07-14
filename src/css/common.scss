@@ -1,17 +1,18 @@
 .wrapper{
-  border: var(--clr-gray-3) 2px solid;
+  border: var(--clr-white) 2px solid;
   border-radius: 20px;
   padding: 1rem;
   background-color: var(--clr-background);
   color: white;
 }
 .icon_button {
+  --radius: 25%;
   background-color: var(--clr-background);
   margin: 0.25rem 0.05rem;
   padding: 0 !important;
   color: white;
   border: 1px solid var(--clr-gray-1);
-  border-radius: 25%;
+  border-radius: var(--radius);
   .v-icon{
     font-size: 1.25rem;
   }

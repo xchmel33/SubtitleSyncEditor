@@ -91,13 +91,14 @@ const isSynced = () => {
 <template>
   <div class="d-flex ga-8 mt-4">
     <div
-      style="overflow-x: auto"
-      class="d-flex flex-column ga-2 flex-1-1"
+      style="overflow-x: auto; overflow-y: hidden"
+      class="d-flex flex-column flex-1-1"
       id="waveform-container"
     >
       <div
         v-for="(item, index) in waveforms"
         :key="item.id"
+        class="mb-2"
       >
         <WaveForm
           :ref="el => waveformsRef.push(el)"

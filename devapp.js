@@ -22,6 +22,7 @@ const { crossCorrelate, alignSubtitles } = require('./backend/correlate.js')
 const { getWav } = require('./backend/converter')
 const dialog = require('node-file-dialog')
 const { scanDirectory } = require('./backend/fileManager')
+const { alignAllSubtitles } = require('./backend/correlate')
 
 const app = express()
 const port = 3000
@@ -240,6 +241,12 @@ app.post('/get-wav', (req, res) => {
     const executionTime = endTime[0] + endTime[1] / 1e9
     console.log(`Converted ${videoFilename} to Wav in: ${executionTime}s`)
   })
+})
+
+app.post('/align-all-subtitles', (req, res) => {
+  alignAllSubtitles()
+    .then(offsetSeconds => res.send({ offsetSeconds }))
+    .catch(error => res.status(500).json({ error: error.message }))
 })
 
 app.listen(port, () => {

@@ -26,6 +26,9 @@ const props = defineProps({
   bgColor: {
     default: '',
   },
+  rounded: {
+    default: false,
+  },
 })
 const getIconSize = () => {
   switch (props.size) {
@@ -37,6 +40,8 @@ const getIconSize = () => {
       return '1.25rem'
     case 'large':
       return '1.5rem'
+    case 'xlarge':
+      return '2rem'
     default:
       return ''
   }
@@ -102,7 +107,9 @@ const getIconSize = () => {
       <template v-slot:activator="{ props }">
         <v-btn
           class="icon_button"
+          :style="rounded ? 'border-radius: 50%' : ''"
           :class="`icon_button_${size}`"
+          :size="size"
           @click="callback"
         >
           <v-icon

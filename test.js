@@ -1,11 +1,3 @@
-const dialog = require('node-file-dialog')
-const config = { type: 'directory' }
-const { scanDirectory } = require('./backend/fileManager')
+const { alignAllSubtitles } = require('./backend/correlate')
 
-dialog(config)
-  .then(dir => {
-    const p = dir[0]
-    const files = scanDirectory(p, 'video')
-    console.log(files)
-  })
-  .catch(err => console.log(err))
+alignAllSubtitles().then(r => console.log('Done:', r))
