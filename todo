@@ -8,9 +8,23 @@
 ✅ Fix styling of the app
 ✅ Auto align: find the longest sequence of similar subtitles by common durations and align them
 
-Remove session.js and use only load and save
-Remove subtitle preview watch
-Fix loading into the waveform
+Refactor subtitle align
+- problem:
+    - alignment is random, the reference subtitle is often not aligned
+- solution:
+    - instead of searching for subtitles close in time, mark the longest sequence of similar subtitles as aligned and re-time them to be matched
+- current state of alignment process:
+1. Method `alignAllSubtitles` returns index of 1st subtitle which is followed by the longest sequence of similar subtitles by common durations
+2. Method `alignSignals` uses the index of subtitle returned by `alignAllSubtitles` as segment and aligns it to the other audio signal, returns offset
+3. Method `_alignSubtitleTimes` re-times all subtitles returned as the longest sequence of similar subtitles by common durations
+- refactor flow, names, add comments:
+    MODULE: `align.js`
+1. Main method fetching data and calling other methods called `alignBySubtitleSequence`
+2. Change name of `alignAllSubtitles` to `findLongestSubtitleSequence`
+3. Change name of `alignSignals` to `findSegmentOffset` (method removed, renamed `alignWavFiles` & kept in `correlate.js`)
+4. Change name of `_alignSubtitle` to `reTimeSubtitles`
+    MODULE: `correlate.js` (existing methods ending with `alignWavFiles`)
+
 Create executable file for Windows, Linux and MacOS:
     - create download page
 Fix doc

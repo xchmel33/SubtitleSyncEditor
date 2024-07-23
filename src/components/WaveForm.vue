@@ -123,7 +123,6 @@ const updateRegion = (subtitle, region) => {
 const updateRegionsFromSubtitles = () => {
   $loading.message = 'Loading subtitles into waveform...'
   $loading.stuck = true
-  console.log('Update regions from subtitles', props.sync)
   setTimeout(() => {
     requestAnimationFrame(() => {
       wsRegions.value.regions.forEach(region => {
@@ -181,10 +180,23 @@ const handleOpenWaveMenu = e => {
   menuPos.value = { x: e.clientX, y: window.innerHeight * 0.85, time: menuPos.value.time || 0 }
   openWaveMenu.value.click()
 }
+
+const waitForWavesurfer = callback => {
+  console.log('Waiting for WaveSurfer')
+  const wait = setInterval(() => {
+    if (ws.value && ws.value.renderer && ws.value.renderer.container && !loading.value) {
+      console.log('WaveSurfer ready')
+      clearInterval(wait)
+      callback()
+    }
+  }, 50)
+}
+
 const handleTimeUpdate = () => {
-  if (ws.value) {
-    ws.value.setTime(time.value)
+  if (!ws.value || !ws.value.renderer || !ws.value.renderer.container) {
+    return waitForWavesurfer(handleTimeUpdate)
   }
+  ws.value.setTime(time.value)
   const container = document.getElementById('waveform-container')
   const currentContainerWidth = ws.value.renderer.container.getBoundingClientRect().width
   const maxWidth = Math.max(
@@ -193,11 +205,15 @@ const handleTimeUpdate = () => {
     ),
   )
   const containerRatio = currentContainerWidth / maxWidth
-  const cursorPosPercent = ws.value.getCurrentTime() / ws.value.getDuration()
-  const scrollPos = container.scrollWidth * cursorPosPercent * containerRatio - 100 // 100 is cursor offset from start
+  const cursorPosPercent =
+    (ws.value.getCurrentTime() + props.offsetMs / 1000) /
+    (ws.value.getDuration() + props.offsetMs / 1000)
+  const offset = container.getBoundingClientRect().width / 2
+  const scrollPos = container.scrollWidth * cursorPosPercent * containerRatio - offset
   container.scrollTo({
     left: scrollPos,
   })
+  console.log('Scrolled into', scrollPos)
 }
 
 const initWaveSurfer = async () => {
@@ -205,7 +221,6 @@ const initWaveSurfer = async () => {
     ws.value.destroy()
   }
   const wavFilename = await loadWav(props.videoName)
-  const startTime = new Date()
   ws.value = WaveSurfer.create({
     url: wavFilename,
     container: waveform.value,
@@ -215,7 +230,6 @@ const initWaveSurfer = async () => {
     hideScrollbar: true,
     barAlign: 'bottom',
     barWidth: 2,
-    pixelRatio: 1,
     plugins: [
       Hover.create({
         lineColor: '#ff0000',
@@ -261,9 +275,6 @@ const initWaveSurfer = async () => {
     ws.value.zoom(props.zoomLevel)
     addOffset()
     updateRegionsFromSubtitles()
-    const endTime = new Date()
-    const loadDuration = endTime - startTime // Calculate the load duration
-    console.log(`Wavesurfer is ready. Loading took ${loadDuration} milliseconds.`)
   })
   ws.value.on('click', progress => {
     menuPos.value.time = progress * ws.value.getDuration()
@@ -384,7 +395,6 @@ const addOffset = () => {
   const { audio } = getAudioData()
   const waveDiv = waveform.value?.children[0] || {}
   if (!waveDiv) {
-    console.error('Waveform not found!')
     return
   }
   waveDiv.shadowRoot.querySelector('.wrapper').style.marginLeft = 0
@@ -551,12 +561,10 @@ const regionButtons = [
   {
     label: 'Align subtitle',
     condition: () => !props.offset,
-    action: () => {
-      const start = currentRegion.value.start
-      const duration = currentRegion.value.end - currentRegion.value.start
-      const { sampleRate } = getAudioData()
-      emit('align-subtitle', { start, duration, sampleRate })
-    },
+    action: () =>
+      emit('align-subtitle', {
+        subtitleRef: props.videoSubtitles.find(sub => sub.id === currentRegion.value.subId),
+      }),
   },
   {
     label: 'Clear alignment',

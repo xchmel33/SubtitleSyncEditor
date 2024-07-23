@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({
+defineProps({
   text: {
     type: String,
     default: '',
@@ -9,7 +9,6 @@ const props = defineProps({
     default: false,
   },
 })
-console.log('LoaderSpinner', props.text)
 </script>
 
 <template>

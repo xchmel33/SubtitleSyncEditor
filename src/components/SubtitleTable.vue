@@ -1,6 +1,6 @@
 <script setup>
 import ActionBtn from '@/components/lib/ActionBtn.vue'
-import { reactive, ref, watch } from 'vue'
+import { nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { numFixed, smartSplit, uniqueId } from '@/utilities/helpers'
 import { handleKeyCombination } from '@/utilities/listeners'
 
@@ -204,12 +204,23 @@ const deactivateAllSubtitles = () => {
   document.activeElement?.blur()
   emit('activate-subtitle', null)
 }
+const scrollToActive = () => {
+  if (!activeSubtitle.value || !subtitleTable.value?.querySelector) return
+  subtitleTable.value.querySelector('#subtitle_' + activeSubtitle.value.id).scrollIntoView({
+    block: 'center',
+  })
+}
+
 watch(
   () => props.activeSubtitleProp,
   () => {
     activeSubtitle.value = props.activeSubtitleProp
+    nextTick().then(() => {
+      playFromActiveSubtitle()
+      scrollToActive()
+    })
   },
-  { immediate: true },
+  { immediate: false },
 )
 </script>
 

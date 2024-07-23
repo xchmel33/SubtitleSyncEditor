@@ -75,22 +75,12 @@ export const localPath = async ({ service, path }) => {
   return path.replace(cwd, '.')
 }
 
-export const stringDiff = (str1, str2) => {
-  const diffChars = []
-  str1.split('').forEach((char, index) => {
-    if (char !== str2[index]) {
-      diffChars.push(char)
-    }
-  })
-  return diffChars.join('')
-}
-
 export const compareObjects = (obj1, obj2, debug = false) => {
   obj1 = typeof obj1 === 'string' ? obj1 : JSON.stringify(obj1)
   obj2 = typeof obj2 === 'string' ? obj2 : JSON.stringify(obj2)
   const res = obj1 === obj2
   if (!res && debug) {
-    console.log('Objects differ in ', stringDiff(obj1, obj2))
+    console.log('Objects differ ', obj1, obj2)
   }
   return res
 }

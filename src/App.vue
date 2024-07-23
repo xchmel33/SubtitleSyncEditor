@@ -13,8 +13,8 @@ const { $apiService, $error, $loading, $update } =
   getCurrentInstance().appContext.config.globalProperties
 
 const { session, undo, redo, load } = sessionLoader([
+  // 'active',
   'hover',
-  'active',
   'match',
   'merge',
   'currentTime',
@@ -43,7 +43,6 @@ const handleSubtitlesUpdate = (subtitles, idx) => {
     target: null,
     idx,
   })
-  console.log('Subtitles updated:', $update.target)
 }
 const handleSubtitleUpdate = ({ item, index }, idx) => {
   session.value.data[idx].subtitleRows[index] = item
@@ -57,12 +56,6 @@ const handleSubtitleUpdate = ({ item, index }, idx) => {
     !session.value.data[idx].sync ||
     !(concurrentEditing.value.time || concurrentEditing.value.text)
   ) {
-    console.log(
-      'Subtitle not aligned or concurrent editing not enabled',
-      session.value.data[idx].sync,
-      concurrentEditing.value.time,
-      concurrentEditing.value.text,
-    )
     return
   }
   if (item.aligned) {
@@ -70,7 +63,6 @@ const handleSubtitleUpdate = ({ item, index }, idx) => {
     const matchedSubtitle = session.value.data[videoId].subtitleRows.find(
       x => x.id === item.aligned,
     )
-    console.log('Subtitle is aligned to', matchedSubtitle)
     if (!matchedSubtitle) {
       return
     }
@@ -174,7 +166,6 @@ const handleAlignmentUpdate = ({ index, offset, offsetMs }) => {
   })
 }
 const handleSetTimeTo = (time, idx) => {
-  console.log('Set time to', time)
   const videoElement = document.getElementById(`video_player_${session.value.data[idx].videoFile}`)
   if (videoElement) {
     videoElement.currentTime = time
@@ -232,10 +223,26 @@ onMounted(() => {
   ])
 })
 const handleConcurrentEditing = e => {
-  console.log('Concurrent editing', e)
   if (!session.value.data.some(x => x.sync)) concurrentEditing.value = { text: false, time: false }
   else concurrentEditing.value = e
-  console.log('Concurrent editing set to', concurrentEditing.value)
+}
+
+const reloadSession = async subtitleIndex => {
+  await load()
+  session.value.data.forEach((x, idx) => {
+    $update.targets.push({
+      name: 'subtitles',
+      target: { sync: true },
+      idx,
+    })
+  })
+  nextTick().then(() => {
+    if (subtitleIndex !== undefined) {
+      const idx = session.value.data.findIndex(x => x.offset !== 0)
+      const subtitle = session.value.data[idx].subtitleRows[subtitleIndex]
+      handleActiveSubtitle(subtitle, idx)
+    }
+  })
 }
 
 const allFilesLoaded = computed(() => {
@@ -267,6 +274,7 @@ const allFilesLoaded = computed(() => {
         @add-subtitle="addSubtitle($event, idx)"
         @delete-subtitle="deleteSubtitle($event, idx)"
         @activate-subtitle="handleActiveSubtitle($event, idx)"
+        @reload-session="reloadSession"
       />
     </div>
     <WaveContainer
@@ -282,7 +290,7 @@ const allFilesLoaded = computed(() => {
       @delete-subtitle="deleteSubtitle($event.unwrap, $event.idx)"
       @set-time-to="handleSetTimeTo($event.unwrap, $event.idx)"
       @activate-subtitle="handleActiveSubtitle($event.unwrap, $event.idx)"
-      @reload-session="async () => await load()"
+      @reload-session="reloadSession"
     />
   </div>
   <ErrorBox

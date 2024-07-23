@@ -5,6 +5,7 @@ import { formatSubtitles } from '@/utilities/subtitles'
 import { getCurrentInstance, ref, watch } from 'vue'
 import { getFilename } from '@/utilities/helpers'
 import { handleKeyCombination } from '@/utilities/listeners'
+import { useAlign } from '@/utilities/align'
 import ActionBtn from '@/components/lib/ActionBtn.vue'
 
 const { $apiService, $error } = getCurrentInstance().appContext.config.globalProperties
@@ -59,7 +60,12 @@ const emit = defineEmits([
   'concurrent-editing',
   'add-subtitle',
   'delete-subtitle',
+  'reload-session',
 ])
+const emitCallback = subtitleIndex => {
+  emit('reload-session', subtitleIndex)
+}
+const { alignSubtitles } = useAlign(emitCallback)
 
 // const contentContainer = ref(null)
 
@@ -103,8 +109,6 @@ const handlePlayFromSubtitle = start => {
   const video = document.getElementById(`video_player_${props.item.videoFile}`)
   video.currentTime = start
 }
-
-const alignAllSubtitles = async () => $apiService.sendMessage('align-all-subtitles', {})
 
 const hasConcurrentEditing = () => {
   return props.concurrentEditing.text || props.concurrentEditing.time
@@ -225,7 +229,7 @@ watch(props.concurrentEditing, () => {
         tooltip="Align subtitles"
         size="xlarge"
         :rounded="true"
-        @click="alignAllSubtitles"
+        @click="alignSubtitles({})"
       ></ActionBtn>
     </div>
   </div>

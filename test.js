@@ -1,3 +1,8 @@
-const { alignAllSubtitles } = require('./backend/correlate')
+const { alignBySubtitleSequence } = require('./backend/align')
+const fs = require('fs')
 
-alignAllSubtitles().then(r => console.log('Done:', r))
+const session = JSON.parse(fs.readFileSync('./backend/session.json').toString())
+const { data } = session
+const subtitleRef = data[0].subtitleRows[0]
+
+alignBySubtitleSequence(subtitleRef).then(r => console.log('Done:', r))

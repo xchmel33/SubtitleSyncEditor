@@ -55,6 +55,7 @@ const setVideoTime = () => {
 }
 
 const handleTimeUpdate = () => {
+  if (!videoPlayer.value) return
   time.value = videoPlayer.value.currentTime
   emits('update:time', time.value)
 }

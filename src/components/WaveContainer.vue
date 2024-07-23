@@ -1,9 +1,7 @@
 <script setup>
-import { getCurrentInstance, nextTick, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import WaveForm from '@/components/WaveForm.vue'
-import { loadWav } from '@/utilities/helpers'
-
-const { $apiService, $loading, $error } = getCurrentInstance().appContext.config.globalProperties
+import { useAlign } from '@/utilities/align'
 
 const props = defineProps({
   waveforms: {
@@ -32,9 +30,13 @@ const emit = defineEmits([
   'activate-subtitle',
   'reload-session',
 ])
+const emitCallback = subtitleIndex => {
+  emit('reload-session', subtitleIndex)
+}
+const { alignSubtitles } = useAlign(emitCallback)
+
 const zoomLevel = ref(props.zoom)
 const wsStartPos = ref(props.wsStart)
-const loading = ref(false)
 const waveformsRef = ref([])
 
 watch(zoomLevel, () => {
@@ -43,45 +45,6 @@ watch(zoomLevel, () => {
 watch(wsStartPos, () => {
   emit('update:wsStart', wsStartPos.value)
 })
-watch(loading, () => {
-  $loading.message = loading.value ? 'Aligning subtitles...' : ''
-})
-
-const alignSubtitle = async (index, alignmentData) => {
-  await nextTick().then(() => {
-    loading.value = true
-  })
-  await nextTick().then(async () => {
-    try {
-      const { start, duration } = alignmentData
-      const segmentFile = await loadWav(props.waveforms[index].videoFile)
-      const audioIndex = index + 1 < props.waveforms.length ? index + 1 : index - 1
-      const audioFile = await loadWav(props.waveforms[audioIndex].videoFile)
-      const { data } = await $apiService.sendMessage('align-signals', {
-        segment: {
-          file: segmentFile,
-          start,
-          duration,
-        },
-        audio: audioFile,
-        segmentIndex: index,
-        audioIndex,
-      })
-      const { offsetSeconds } = data
-      emit('update:offset', {
-        index,
-        offset: offsetSeconds,
-        offsetMs: offsetSeconds * 1000,
-      })
-      emit('reload-session')
-    } catch (error) {
-      $error.message = error.message
-    }
-  })
-  await nextTick().then(() => {
-    loading.value = false
-  })
-}
 
 const isSynced = () => {
   return props.waveforms.some(x => x.sync)
@@ -112,7 +75,7 @@ const isSynced = () => {
           :offset="item.offset"
           :offsetMs="item.offsetMs"
           :sync="isSynced()"
-          @alignSubtitle="alignSubtitle(index, $event)"
+          @alignSubtitle="alignSubtitles($event)"
           @clearOffset="() => emit('update:offset', { index, offset: 0, offsetMs: 0 })"
           @update-subtitle="$emit('update:subtitle', { idx: index, unwrap: $event })"
           @update-subtitles="$emit('update:subtitles', { idx: index, unwrap: $event })"

@@ -94,6 +94,7 @@ export const sessionLoader = (keyBlacklist = [], maxUndoRedo = 20) => {
     }
     await save()
   }
+
   watch(
     () => session.value.data,
     async () => {

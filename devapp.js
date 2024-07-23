@@ -18,7 +18,7 @@ const {
 } = require('./backend/fileManager.js')
 const cors = require('cors')
 const fs = require('fs')
-const { crossCorrelate, alignSubtitles } = require('./backend/correlate.js')
+const { alignBySubtitleSequence } = require('./backend/align')
 const { getWav } = require('./backend/converter')
 const dialog = require('node-file-dialog')
 const { scanDirectory } = require('./backend/fileManager')
@@ -192,7 +192,6 @@ app.post('/save-session', (req, res) => {
   const { session } = req.body
   fs.writeFileSync('./backend/session.json', session)
   res.send({ status: 'ok' })
-  // console.log('Session saved')
 })
 
 app.post('/load-session', (req, res) => {
@@ -202,34 +201,13 @@ app.post('/load-session', (req, res) => {
   }
   const session = fs.readFileSync('./backend/session.json')
   res.send(JSON.parse(session.toString()))
-  // console.log('Session loaded')
-})
-
-app.post('/cross-correlate', (req, res) => {
-  const { segment, audio } = req.body
-
-  const startTime = process.hrtime() // Start timing
-  const average = 0
-  const { bestOffset } = crossCorrelate(segment, audio, average)
-  const endTime = process.hrtime(startTime) // End timing
-
-  // Convert [seconds, nanoseconds] to total seconds
-  const executionTime = endTime[0] + endTime[1] / 1e9
-  console.log(`Execution time: ${executionTime}s, average: ${average} samples`)
-  res.send({ bestOffset, executionTime })
 })
 
 const sampleRate = 8000
-app.post('/align-signals', async (req, res) => {
-  const { segment, audio, segmentIndex, audioIndex } = req.body
-  const { offsetSeconds } = await alignSubtitles({
-    segment,
-    audio,
-    sampleRate,
-    segmentIndex,
-    audioIndex,
-  })
-  res.send({ offsetSeconds })
+app.post('/align-subtitles', async (req, res) => {
+  const { subtitleRef } = req.body || null
+  const { offsetSeconds, subtitleIndex, index } = await alignBySubtitleSequence(subtitleRef)
+  res.send({ offsetSeconds, subtitleIndex, index })
 })
 
 app.post('/get-wav', (req, res) => {
@@ -242,13 +220,6 @@ app.post('/get-wav', (req, res) => {
     console.log(`Converted ${videoFilename} to Wav in: ${executionTime}s`)
   })
 })
-
-app.post('/align-all-subtitles', (req, res) => {
-  alignAllSubtitles()
-    .then(offsetSeconds => res.send({ offsetSeconds }))
-    .catch(error => res.status(500).json({ error: error.message }))
-})
-
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`)
 })
