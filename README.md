@@ -17,6 +17,9 @@ across several video versions. The application enables the concurrent creation a
 variations of a single video, targeting videos of different cuts and inserted scenes. This feature addresses a significant
 challenge in subtitle editing.
 
+## 💰 Suport my work 
+
+https://buymeacoffee.com/xmelo
 
 ## Project structure
 ./doc - documentation including thesis in pdf as well as files required for creating PDF 
