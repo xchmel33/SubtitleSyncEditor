@@ -1,7 +1,6 @@
 # Subtitle Sync Editor
 
 **Author:** Lukas Chmelo  
-**VUT Login:** xchmel33
 
 **Supervisor:**  Ing. Tomáš Milet, Ph.D.
 
